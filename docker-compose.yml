@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  pagopa-ecommerce-user-service:
+    container_name: pagopa-ecommerce-user-service
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - ./.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    networks:
+      - pagopa-ecommerce-user-net
+
+  mongo-express:
+    container_name: pagopa-ecommerce-user-service-mongo-express
+    image: mongo-express@sha256:1b23d7976f0210dbec74045c209e52fbb26d29b2e873d6c6fa3d3f0ae32c2a64
+    env_file: ./docker/config/mongo/mongo-express.env
+    ports:
+      - "8081:8081"
+    networks:
+      - pagopa-ecommerce-user-net
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: pagopa-ecommerce-user-service-mongo
+    image: mongo@sha256:7b225d4ae2df7cf98812f27f5d0d98054efaf9bfd4cc79c7e3e0bed1c1d3bf45
+    env_file: ./docker/config/mongo/mongodb.env
+    ports:
+      - "27017:27017"
+    networks:
+      - pagopa-ecommerce-user-net
+    healthcheck:
+      test: echo "db.stats().ok" | mongo --quiet
+      interval: 10s
+
+
+
+networks:
+  pagopa-ecommerce-user-net:
+    driver: bridge
+
+
