@@ -14,6 +14,7 @@ COPY pagopa-ecommerce-commons-maven-install.sh .
 
 COPY eclipse-style.xml eclipse-style.xml
 COPY src src
+RUN chmod +x gradlew
 RUN ./gradlew build -x test -PbuildCommons
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
 
