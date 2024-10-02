@@ -244,7 +244,7 @@ that will reorder the file with the added dependencies checksum in the expected 
 Finally, you can add new dependencies both to gradle.lockfile writing verification metadata running
 
 ```shell
- ./gradlew dependencies --write-locks --write-verification-metadata sha256 --no-build-cache --refresh-dependencies
+./gradlew --write-locks --write-verification-metadata sha256 clean spotlessApply build --no-build-cache --refresh-dependencies
 ```
 
 For more information read the
