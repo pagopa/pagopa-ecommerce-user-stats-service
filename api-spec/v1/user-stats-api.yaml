@@ -159,8 +159,10 @@ components:
         date:
           type: string
           format: date-time
+
         type:
-          $ref: '#/components/schemas/WalletLastUsageType'
+          type: string
+          description: Discriminant type for last usage of a wallet, fixed value 'wallet'
       required:
         - walletId
         - date
@@ -177,21 +179,12 @@ components:
           type: string
           format: date-time
         type:
-          $ref: '#/components/schemas/GuestMethodLastUsageType'
+          type: string
+          description: Discriminant type for last usage of a guest (non-wallet) payment method, fixed value 'guest'
       required:
         - paymentMethodId
         - date
         - type
-    WalletLastUsageType:
-      type: string
-      description: Discriminant type for last usage of a wallet
-      enum:
-        - wallet
-    GuestMethodLastUsageType:
-      type: string
-      description: Discriminant type for last usage of a guest (non-wallet) payment method
-      enum:
-        - guest
     WalletId:
       description: Wallet identifier
       type: string
