@@ -27,11 +27,6 @@ repositories {
 
 object Dependencies {
     const val ecsLoggingVersion = "1.5.0"
-    // eCommerce commons library version
-    const val ecommerceCommonsVersion = "1.27.0"
-
-    // eCommerce commons library git ref (by default tag)
-    const val ecommerceCommonsGitRef = ecommerceCommonsVersion
 
     const val ioVavrVersion = "0.10.4"
 }
@@ -67,9 +62,6 @@ dependencies {
     // ECS logback encoder
     implementation("co.elastic.logging:logback-ecs-encoder:${Dependencies.ecsLoggingVersion}")
 
-    // eCommerce commons library
-    implementation("it.pagopa:pagopa-ecommerce-commons:${Dependencies.ecommerceCommonsVersion}")
-
     runtimeOnly("org.springframework.boot:spring-boot-devtools")
     // test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -77,10 +69,6 @@ dependencies {
     // Kotlin dependencies
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    // eCommerce commons tests utility library
-    testImplementation(
-        "it.pagopa:pagopa-ecommerce-commons:${Dependencies.ecommerceCommonsVersion}:tests"
-    )
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
@@ -106,14 +94,10 @@ springBoot {
     buildInfo { properties { additional.set(mapOf("description" to project.description)) } }
 }
 // compilation configurations
-/*
- * toolchain set to java 17 since ecommerce-commons library enables preview and compiling with higher java version make the build fails
- * version can be upgraded here once commons library java version is updated too
- */
-java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 
 tasks.withType<KotlinCompile> {
-    dependsOn("install-commons")
+    dependsOn()
     compilerOptions {
         apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9)
         freeCompilerArgs.addAll("-Xjsr305=strict")
@@ -174,15 +158,3 @@ tasks.jacocoTestReport {
  * and version
  */
 tasks.processResources { filesMatching("application.properties") { expand(project.properties) } }
-
-tasks.register<Exec>("install-commons") {
-    group = "build"
-    description = "Compile eCommerce commons library pulling referred version branch"
-    val buildCommons = providers.gradleProperty("buildCommons")
-    onlyIf("To build commons library run gradle build -PbuildCommons") { buildCommons.isPresent }
-    commandLine(
-        "sh",
-        "./pagopa-ecommerce-commons-maven-install.sh",
-        Dependencies.ecommerceCommonsGitRef
-    )
-}

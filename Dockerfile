@@ -1,8 +1,5 @@
-FROM amazoncorretto:17@sha256:ec48de9e5333448734ba6a4fe0af04b28d1168ce8c05d0eed0f3984257f8f4b5 AS build
+FROM amazoncorretto:21@sha256:6a98c4402708fe8d16e946b4b5bac396379ec5104c1661e2a27b2b45cf9e2d16 AS build
 WORKDIR /workspace/app
-
-#git executable used for checkout eCommerce commons library and perform on-the-fly commons version build
-RUN apk --no-cache add git
 
 COPY gradlew .
 COPY gradle gradle
@@ -10,15 +7,14 @@ COPY build.gradle.kts .
 COPY settings.gradle .
 COPY gradle.lockfile .
 COPY gradle.properties .
-COPY pagopa-ecommerce-commons-maven-install.sh .
 
 COPY eclipse-style.xml eclipse-style.xml
 COPY src src
 RUN chmod +x gradlew
-RUN ./gradlew build -x test -PbuildCommons --stacktrace
+RUN ./gradlew build -x test
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
 
-FROM amazoncorretto:17-alpine@sha256:ec48de9e5333448734ba6a4fe0af04b28d1168ce8c05d0eed0f3984257f8f4b5
+FROM amazoncorretto:21@sha256:6a98c4402708fe8d16e946b4b5bac396379ec5104c1661e2a27b2b45cf9e2d16
 
 RUN addgroup --system user && adduser --ingroup user --system user
 USER user:user
@@ -40,5 +36,5 @@ COPY --from=build --chown=user ${EXTRACTED}/application/ ./
 RUN true
 
 
-ENTRYPOINT ["java","-javaagent:opentelemetry-javaagent.jar", "--enable-preview","org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java","-javaagent:opentelemetry-javaagent.jar","org.springframework.boot.loader.launch.JarLauncher"]
 
