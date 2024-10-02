@@ -44,12 +44,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-        '401':
-          description: Unauthorized, api key missing or invalid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemJson'
         '500':
           description: Unexpected error updating user last used payment method
           content:
@@ -77,12 +71,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserLastPaymentMethodData'
-        '401':
-          description: Unauthorized, api key missing or invalid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemJson'
         '404':
           description: No information found for the input user
           content:
