@@ -11,7 +11,7 @@ plugins {
   id("org.springframework.boot") version "3.0.5"
   id("io.spring.dependency-management") version "1.1.0"
   id("com.diffplug.spotless") version "6.18.0"
-  id("org.openapi.generator") version "6.3.0"
+  id("org.openapi.generator") version "7.8.0"
   id("org.sonarqube") version "4.0.0.2929"
   id("com.dipien.semantic-version") version "2.0.0" apply false
   kotlin("plugin.spring") version "1.8.10"
@@ -136,7 +136,7 @@ tasks.create("applySemanticVersionPlugin") {
 }
 
 tasks.withType<KotlinCompile> {
-  dependsOn("install-commons")
+  dependsOn("install-commons", "user-stats-v1")
   kotlinOptions.jvmTarget = "17"
 }
 
@@ -205,5 +205,42 @@ tasks.register<Exec>("install-commons") {
     "sh",
     "./pagopa-ecommerce-commons-maven-install.sh",
     Dependencies.ecommerceCommonsGitRef
+  )
+}
+
+/*
+ * used java generator here instead of kotlin-spring one since kotlin generator generates
+ * interfaces for one of interface that are not implemented by data concrete data classes
+ * making code unusable
+ */
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("user-stats-v1") {
+  group = "code-generator"
+  description = "Generate stubs from openapi"
+  generatorName.set("spring")
+  inputSpec.set("$rootDir/api-spec/v1/user-stats-api.yaml")
+  outputDir.set("$buildDir/generated")
+  apiPackage.set("it.pagopa.generated.ecommerce.users.api")
+  modelPackage.set("it.pagopa.generated.ecommerce.users.model")
+  generateApiTests.set(false)
+  generateApiDocumentation.set(false)
+  generateApiTests.set(false)
+  generateModelTests.set(false)
+  library.set("spring-boot")
+  modelNameSuffix.set("Dto")
+  configOptions.set(
+    mapOf(
+      "swaggerAnnotations" to "false",
+      "openApiNullable" to "true",
+      "interfaceOnly" to "true",
+      "hideGenerationTimestamp" to "true",
+      "skipDefaultInterface" to "true",
+      "useSwaggerUI" to "false",
+      "reactive" to "true",
+      "useSpringBoot3" to "true",
+      "oas3" to "true",
+      "generateSupportingFiles" to "true",
+      "legacyDiscriminatorBehavior" to "true",
+      "useOneOfInterfaces" to "true",
+    )
   )
 }
