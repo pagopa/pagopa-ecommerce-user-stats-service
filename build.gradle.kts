@@ -4,7 +4,7 @@ group = "it.pagopa.ecommerce.users"
 
 version = "0.0.1"
 
-description = "pagopa-ecommerce-user-service"
+description = "pagopa-ecommerce-user-stats-service"
 
 plugins {
     id("java")
