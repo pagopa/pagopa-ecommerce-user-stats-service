@@ -54,7 +54,6 @@ class ExceptionHandler {
         ConstraintViolationException::class
     )
     fun handleRequestValidationException(exception: Exception): ResponseEntity<ProblemJson> {
-        // stacktrace not logged to avoid logging of sensitive data such as mail
         logger.error(INVALID_REQUEST_ERROR_MESSAGE, exception)
         val validationErrorCause =
             when (exception) {

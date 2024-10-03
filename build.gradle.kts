@@ -71,6 +71,7 @@ dependencies {
   implementation(
     "io.swagger.core.v3:swagger-annotations:${Dependencies.ioSwaggerAnnotationVersion}"
   )
+
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:${Dependencies.ecsLoggingVersion}")
 
