@@ -18,7 +18,6 @@ class LastUsageControllerTest {
     @Test
     fun `Should return bad request for invalid UUID retrieving user last method usage data`() =
         runTest {
-            val parameters = mapOf("userId" to "invalid")
             val expectedErrorResponse =
                 ProblemJson().apply {
                     this.status = HttpStatus.BAD_REQUEST.value()
@@ -27,7 +26,8 @@ class LastUsageControllerTest {
                 }
             webClient
                 .get()
-                .uri("/user/{userId}/lastPaymentMethodUsed", parameters)
+                .uri("/user/lastPaymentMethodUsed")
+                .header("x-user-id", "invalid")
                 .exchange()
                 .expectStatus()
                 .isBadRequest
@@ -38,7 +38,6 @@ class LastUsageControllerTest {
     @Test
     fun `Should return bad request for invalid UUID saving user last method usage data`() =
         runTest {
-            val parameters = mapOf("userId" to "invalid")
             val expectedErrorResponse =
                 ProblemJson().apply {
                     this.status = HttpStatus.BAD_REQUEST.value()
@@ -56,7 +55,8 @@ class LastUsageControllerTest {
                     .trimIndent()
             webClient
                 .post()
-                .uri("/user/{userId}/lastPaymentMethodUsed", parameters)
+                .uri("/user/lastPaymentMethodUsed")
+                .header("x-user-id", "invalid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
                 .exchange()
@@ -69,7 +69,6 @@ class LastUsageControllerTest {
     @Test
     fun `Should return bad request for invalid request saving user last method usage data`() =
         runTest {
-            val parameters = mapOf("userId" to UUID.randomUUID().toString())
             val expectedErrorResponse =
                 ProblemJson().apply {
                     this.status = HttpStatus.BAD_REQUEST.value()
@@ -86,7 +85,8 @@ class LastUsageControllerTest {
                     .trimIndent()
             webClient
                 .post()
-                .uri("/user/{userId}/lastPaymentMethodUsed", parameters)
+                .uri("/user/lastPaymentMethodUsed")
+                .header("x-user-id", UUID.randomUUID().toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
                 .exchange()

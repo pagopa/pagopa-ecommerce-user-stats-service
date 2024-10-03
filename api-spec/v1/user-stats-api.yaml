@@ -17,16 +17,16 @@ externalDocs:
 servers:
   - url: https://${hostname}
 paths:
-  /user/{userId}/lastPaymentMethodUsed:
+  /user/lastPaymentMethodUsed:
     post:
       parameters:
-        - name: userId
-          in: path
+        - in: header
+          name: x-user-id
           required: true
-          description: User identifier
           schema:
             type: string
             format: uuid
+            description: user id
 
       operationId: saveLastPaymentMethodUsed
       tags:
@@ -52,13 +52,13 @@ paths:
                 $ref: '#/components/schemas/ProblemJson'
     get:
       parameters:
-        - name: userId
-          in: path
+        - in: header
+          name: x-user-id
           required: true
-          description: User identifier
           schema:
             type: string
             format: uuid
+            description: user id
       operationId: getLastPaymentMethodUsed
       tags:
         - user-stats

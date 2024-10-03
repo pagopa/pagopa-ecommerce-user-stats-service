@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 @RestController("LastUsageControllerV1")
 class LastUsageController : UserApi {
     override fun getLastPaymentMethodUsed(
-        userId: UUID,
+        xUserId: UUID,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<UserLastPaymentMethodData>> =
         Mono.just(
@@ -26,7 +26,7 @@ class LastUsageController : UserApi {
         )
 
     override fun saveLastPaymentMethodUsed(
-        userId: UUID,
+        xUserId: UUID,
         userLastPaymentMethodDataDto: Mono<UserLastPaymentMethodData>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<Void>> =
