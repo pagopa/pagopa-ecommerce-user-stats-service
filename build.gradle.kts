@@ -195,7 +195,14 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("use
   generateApiTests.set(false)
   generateModelTests.set(false)
   library.set("spring-boot")
-  modelNameSuffix.set("Dto")
+  /*
+   * Commented out model name suffix because of this issue ->
+   * https://github.com/OpenAPITools/openapi-generator/issues/17343
+   * that cause discriminator field to not be set properly on deserialized class.
+   * With model name suffix on the generated code will use the class name as discriminator fields
+   * for the deserialized responses
+   */
+  // modelNameSuffix.set("Dto")
   configOptions.set(
     mapOf(
       "swaggerAnnotations" to "false",

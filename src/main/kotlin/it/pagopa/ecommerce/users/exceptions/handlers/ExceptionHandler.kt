@@ -1,7 +1,7 @@
 package it.pagopa.ecommerce.users.exceptions.handlers
 
 import it.pagopa.ecommerce.users.exceptions.ApiError
-import it.pagopa.generated.ecommerce.users.model.ProblemJsonDto
+import it.pagopa.generated.ecommerce.users.model.ProblemJson
 import jakarta.validation.ConstraintViolationException
 import jakarta.validation.ValidationException
 import java.util.stream.Collectors
@@ -31,12 +31,12 @@ class ExceptionHandler {
     }
 
     @ExceptionHandler(ApiError::class)
-    fun handleApiErrorException(exception: ApiError): ResponseEntity<ProblemJsonDto> {
+    fun handleApiErrorException(exception: ApiError): ResponseEntity<ProblemJson> {
         logger.error("Exception processing the request", exception)
         val errorDetails = exception.errorDetails()
         return ResponseEntity.status(errorDetails.httpStatusCode)
             .body(
-                ProblemJsonDto()
+                ProblemJson()
                     .detail(errorDetails.description)
                     .status(errorDetails.httpStatusCode.value())
                     .title(errorDetails.title)
@@ -53,7 +53,7 @@ class ExceptionHandler {
         WebExchangeBindException::class,
         ConstraintViolationException::class
     )
-    fun handleRequestValidationException(exception: Exception): ResponseEntity<ProblemJsonDto> {
+    fun handleRequestValidationException(exception: Exception): ResponseEntity<ProblemJson> {
         // stacktrace not logged to avoid logging of sensitive data such as mail
         logger.error(INVALID_REQUEST_ERROR_MESSAGE, exception)
         val validationErrorCause =
@@ -84,7 +84,7 @@ class ExceptionHandler {
             }
         return ResponseEntity.badRequest()
             .body(
-                ProblemJsonDto()
+                ProblemJson()
                     .status(HttpStatus.BAD_REQUEST.value())
                     .title("Bad request")
                     .detail(validationErrorMessage)
@@ -93,11 +93,11 @@ class ExceptionHandler {
 
     /** Handler for generic exception */
     @ExceptionHandler(Throwable::class)
-    fun handleGenericException(e: Throwable): ResponseEntity<ProblemJsonDto> {
+    fun handleGenericException(e: Throwable): ResponseEntity<ProblemJson> {
         logger.error("Exception processing the request", e)
         return ResponseEntity.internalServerError()
             .body(
-                ProblemJsonDto()
+                ProblemJson()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .title("Error processing the request")
                     .detail("Generic error occurred")
