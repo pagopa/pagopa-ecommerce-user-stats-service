@@ -140,7 +140,7 @@ stages:
                     KUBERNETES_SERVICE_CONN: $(DEV_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: "ecommerce"
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-                    VALUE_FILE: "helm/pay-wallet-values-dev.yaml"
+                    VALUE_FILE: "helm/values-dev.yaml"
                     GREEN_VERSION: $(Build.SourceVersion)
   # --- END Deploy DEV --- #
 
@@ -208,7 +208,7 @@ stages:
                     KUBERNETES_SERVICE_CONN: $(UAT_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: "ecommerce"
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-                    VALUE_FILE: "helm/pay-wallet-values-uat.yaml"
+                    VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(green_app_version)
                     BLUE_VERSION: $(Build.SourceVersion)
 
@@ -326,6 +326,6 @@ stages:
                     KUBERNETES_SERVICE_CONN: $(UAT_KUBERNETES_SERVICE_CONN)
                     NAMESPACE: "ecommerce"
                     APP_NAME: $(K8S_IMAGE_REPOSITORY_NAME)
-                    VALUE_FILE: "helm/pay-wallet-values-uat.yaml"
+                    VALUE_FILE: "helm/values-uat.yaml"
                     GREEN_VERSION: $(app_version)
   # --- END Deploy UAT --- #
