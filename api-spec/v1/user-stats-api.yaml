@@ -6,7 +6,7 @@ info:
   contact:
     name: pagoPA - Touchpoints team
 tags:
-  - name: user-stats
+  - name: lastUsage
     description: Api's for tracing and retrieve user statistics
     externalDocs:
       url: TODO
@@ -139,6 +139,7 @@ components:
           wallet: "#/components/schemas/WalletLastUsageData"
           guest: "#/components/schemas/GuestMethodLastUsageData"
     WalletLastUsageData:
+      x-discriminator-value: wallet
       type: object
       description: Last usage data for wallets.
       properties:
@@ -156,6 +157,7 @@ components:
         - date
         - type
     GuestMethodLastUsageData:
+      x-discriminator-value: guest
       type: object
       description: Last usage data for guest method
       properties:
