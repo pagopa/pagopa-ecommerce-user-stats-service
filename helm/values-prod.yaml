@@ -1,0 +1,127 @@
+microservice-chart:
+  namespace: "ecommerce"
+  nameOverride: ""
+  fullnameOverride: ""
+  canaryDelivery:
+    create: false
+    ingress:
+      create: true
+      canary:
+        type: bluegreen
+    service:
+      create: true
+    deployment:
+      create: true
+      image:
+        repository: pagopapcommonacr.azurecr.io/pagopaecommerceuserstatsservice
+        tag: "latest"
+        pullPolicy: Always
+      envConfig: {}
+  image:
+    repository: pagopapcommonacr.azurecr.io/pagopaecommerceuserstatsservice
+    tag: "0.0.1"
+    pullPolicy: Always
+  livenessProbe:
+    handlerType: httpGet
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 60
+    failureThreshold: 6
+    periodSeconds: 10
+  readinessProbe:
+    handlerType: httpGet
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 60
+    failureThreshold: 6
+    periodSeconds: 10
+  deployment:
+    create: true
+    replicas: 5
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+  ingress:
+    create: true
+    host: "weuprod.ecommerce.internal.platform.pagopa.it"
+    path: /pagopa-ecommerce-user-stats-service/(.*)
+    servicePort: 8080
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+  podAnnotations: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "300m"
+    limits:
+      memory: "512Mi"
+      cpu: "300m"
+  autoscaling:
+    enable: true
+    minReplica: 5
+    maxReplica: 10
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 30 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+          value: "70"
+    advanced:
+      horizontalPodAutoscalerConfig:
+        behavior:
+          scaleUp:
+            stabilizationWindowSeconds: 60
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  envConfig:
+    ROOT_LOGGING_LEVEL: "INFO"
+    APP_LOGGING_LEVEL: "INFO"
+    WEB_LOGGING_LEVEL: "OFF"
+    OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-user-stats-service,deployment.environment=prod"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
+    OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+    OTEL_TRACES_EXPORTER: otlp
+    OTEL_METRICS_EXPORTER: otlp
+    OTEL_LOGS_EXPORTER: none
+    OTEL_TRACES_SAMPLER: "always_on"
+    ECS_SERVICE_NAME: pagopa-ecommerce-user-stats-service
+    ECS_SERVICE_ENVIRONMENT: "prod"
+  envSecret: {}
+  keyvault:
+    name: "pagopa-p-ecommerce-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: pagopaecommerceuserstatsservice
+            namespaces: ["ecommerce"]
+            topologyKey: topology.kubernetes.io/zone
