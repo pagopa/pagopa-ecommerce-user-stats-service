@@ -14,7 +14,7 @@ class UserStatisticsService(
     fun findUserLastMethodById(userId: String): Mono<LastUsage> {
         return userStatisticsRepository
             .findById(userId)
-            .switchIfEmpty(Mono.error(Exception("User not found")))
+            .switchIfEmpty(Mono.error(UserNotFoundException(message = "", cause = null)))
             .map { it.lastUsage }
     }
 }
