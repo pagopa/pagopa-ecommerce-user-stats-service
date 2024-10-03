@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  pagopa-ecommerce-user-service:
-    container_name: pagopa-ecommerce-user-service
+  pagopa-ecommerce-user-stats-service:
+    container_name: pagopa-ecommerce-user-stats-service
     build:
       dockerfile: Dockerfile
       context: .
@@ -16,7 +16,7 @@ services:
       - pagopa-ecommerce-user-net
 
   mongo-express:
-    container_name: pagopa-ecommerce-user-service-mongo-express
+    container_name: pagopa-ecommerce-user-stats-service-mongo-express
     image: mongo-express@sha256:1b23d7976f0210dbec74045c209e52fbb26d29b2e873d6c6fa3d3f0ae32c2a64
     env_file: ./docker/config/mongo/mongo-express.env
     ports:
@@ -27,7 +27,7 @@ services:
       - mongo
 
   mongo:
-    container_name: pagopa-ecommerce-user-service-mongo
+    container_name: pagopa-ecommerce-user-stats-service-mongo
     image: mongo@sha256:7b225d4ae2df7cf98812f27f5d0d98054efaf9bfd4cc79c7e3e0bed1c1d3bf45
     env_file: ./docker/config/mongo/mongodb.env
     ports:
