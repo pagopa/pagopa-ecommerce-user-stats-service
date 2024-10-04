@@ -8,8 +8,16 @@ class UserStatisticsTest {
 
     @Test
     fun `can build UserStatistics document`() {
-        val walletType = UserTestUtils.userStatisticsByType(LastUsage.PaymentType.WALLET)
-        val guestType = UserTestUtils.userStatisticsByType(LastUsage.PaymentType.GUEST)
+        val walletType =
+            UserTestUtils.userStatisticsByType(
+                type = LastUsage.PaymentType.WALLET,
+                instrumentId = UserTestUtils.lastUsageWalletId
+            )
+        val guestType =
+            UserTestUtils.userStatisticsByType(
+                type = LastUsage.PaymentType.GUEST,
+                instrumentId = UserTestUtils.lastUsagePaymentMethodId
+            )
         assertNotNull(walletType)
         assertNotNull(walletType.userId)
         assertNotNull(walletType.lastUsage)

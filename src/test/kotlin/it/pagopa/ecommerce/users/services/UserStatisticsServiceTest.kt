@@ -16,8 +16,9 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentCaptor
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.*
 import reactor.core.publisher.Hooks
+import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
 class UserStatisticsServiceTest {
@@ -109,5 +110,34 @@ class UserStatisticsServiceTest {
             )
             .expectError(IllegalArgumentException::class.java)
             .verify()
+    }
+
+    @Test
+    fun `Should retrieve lastUsed method successfully`() {
+        val userStatistics =
+            UserTestUtils.userStatisticsByType(
+                LastUsage.PaymentType.WALLET,
+                UserTestUtils.lastUsageWalletId
+            )
+        val userId = userStatistics.userId
+        given(userStatisticsRepository.findById(userId)).willReturn(Mono.just(userStatistics))
+
+        StepVerifier.create(userStatisticsService.findUserLastMethodById(userId))
+            .expectNext(UserTestUtils.walletLastUsageData)
+            .verifyComplete()
+
+        verify(userStatisticsRepository, times(1)).findById(userId)
+    }
+
+    @Test
+    fun `Should return error for not found user`() {
+        val userId = UUID.randomUUID().toString()
+        given(userStatisticsRepository.findById(userId)).willReturn(Mono.empty())
+
+        StepVerifier.create(userStatisticsService.findUserLastMethodById(userId))
+            .expectError(Exception::class.java)
+            .verify()
+
+        verify(userStatisticsRepository, times(1)).findById(userId)
     }
 }
