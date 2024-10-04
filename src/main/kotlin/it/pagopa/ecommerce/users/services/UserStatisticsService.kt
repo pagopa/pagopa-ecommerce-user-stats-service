@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.users.services
 
 import it.pagopa.ecommerce.users.documents.LastUsage
+import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
 import it.pagopa.ecommerce.users.repositories.UserStatisticsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -14,7 +15,14 @@ class UserStatisticsService(
     fun findUserLastMethodById(userId: String): Mono<LastUsage> {
         return userStatisticsRepository
             .findById(userId)
-            .switchIfEmpty(Mono.error(UserNotFoundException(message = "", cause = null)))
+            .switchIfEmpty(
+                Mono.error(
+                    UserNotFoundException(
+                        message = "User with id [${userId}] not found",
+                        cause = null
+                    )
+                )
+            )
             .map { it.lastUsage }
     }
 }
