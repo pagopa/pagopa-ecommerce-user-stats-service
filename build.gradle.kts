@@ -33,6 +33,7 @@ object Dependencies {
   const val jacksonDatabindNullableVersion = "0.2.6"
 
   const val ioSwaggerAnnotationVersion = "2.2.23"
+  const val mockitoKotlinVersion = "5.4.0"
 }
 
 dependencyManagement {
@@ -83,6 +84,7 @@ dependencies {
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:${Dependencies.mockitoKotlinVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 

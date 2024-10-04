@@ -7,11 +7,11 @@ import org.springframework.data.convert.WritingConverter
 
 @ReadingConverter
 class OffsetDateTimeReadingConverter : Converter<String, OffsetDateTime> {
-    override fun convert(source: String): OffsetDateTime? = OffsetDateTime.parse(source)
+    override fun convert(source: String): OffsetDateTime = OffsetDateTime.parse(source)
 }
 
 @WritingConverter
 class OffsetDateTimeWritingConverter : Converter<OffsetDateTime, String> {
 
-    override fun convert(source: OffsetDateTime): String? = source.toString()
+    override fun convert(source: OffsetDateTime): String = source.toString()
 }

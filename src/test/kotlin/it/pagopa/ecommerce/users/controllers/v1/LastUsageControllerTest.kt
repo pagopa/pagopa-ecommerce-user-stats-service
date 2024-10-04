@@ -1,19 +1,27 @@
 package it.pagopa.ecommerce.users.controllers.v1
 
+import it.pagopa.ecommerce.users.UserTestUtils
 import it.pagopa.ecommerce.users.services.UserStatisticsService
+import it.pagopa.generated.ecommerce.users.model.GuestMethodLastUsageData
 import it.pagopa.generated.ecommerce.users.model.ProblemJson
+import java.time.ZoneId
 import java.util.*
+import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.mockito.BDDMockito.*
+import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest(LastUsageController::class)
+@TestPropertySource(locations = ["classpath:application.test.properties"])
 class LastUsageControllerTest {
     @Autowired lateinit var webClient: WebTestClient
 
@@ -99,4 +107,47 @@ class LastUsageControllerTest {
                 .expectBody(ProblemJson::class.java)
                 .isEqualTo(expectedErrorResponse)
         }
+
+    @Test
+    fun `Should return HTTP 201 created saving last usage to DB successfully`() = runTest {
+
+        // pre-conditions
+        val expectedRequest = UserTestUtils.guestMethodLastUsageData
+        val userId = UserTestUtils.userId
+        given(
+                userStatisticsService.saveUserLastUsedMethodInfo(
+                    userId = any(),
+                    userLastPaymentMethodData = any()
+                )
+            )
+            .willReturn(mono {})
+        // test
+        webClient
+            .post()
+            .uri("/user/lastPaymentMethodUsed")
+            .header("x-user-id", userId.toString())
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(expectedRequest)
+            .exchange()
+            .expectStatus()
+            .isCreated
+        verify(userStatisticsService, times(1))
+            .saveUserLastUsedMethodInfo(
+                userId = org.mockito.kotlin.eq(userId),
+                userLastPaymentMethodData =
+                    org.mockito.kotlin.argThat {
+                        val actualRequest =
+                            (this as GuestMethodLastUsageData).apply {
+                                // workaround to set jackson parsed request to the system default
+                                // one
+                                this.date =
+                                    this.date
+                                        .atZoneSameInstant(ZoneId.systemDefault())
+                                        .toOffsetDateTime()
+                            }
+                        assertEquals(expectedRequest, actualRequest)
+                        true
+                    }
+            )
+    }
 }
