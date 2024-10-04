@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.users.controllers.v1
 
+import it.pagopa.ecommerce.users.services.UserStatisticsService
 import it.pagopa.generated.ecommerce.users.model.ProblemJson
 import java.util.*
 import kotlinx.coroutines.test.runTest
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -14,6 +16,8 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @WebFluxTest(LastUsageController::class)
 class LastUsageControllerTest {
     @Autowired lateinit var webClient: WebTestClient
+
+    @MockBean lateinit var userStatisticsService: UserStatisticsService
 
     @Test
     fun `Should return bad request for invalid UUID retrieving user last method usage data`() =
