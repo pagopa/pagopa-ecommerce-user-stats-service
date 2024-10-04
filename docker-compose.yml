@@ -13,7 +13,7 @@ services:
     depends_on:
       - mongo
     networks:
-      - pagopa-ecommerce-user-net
+      - pagopa-ecommerce-user-stats-net
 
   mongo-express:
     container_name: pagopa-ecommerce-user-stats-service-mongo-express
@@ -22,7 +22,7 @@ services:
     ports:
       - "8081:8081"
     networks:
-      - pagopa-ecommerce-user-net
+      - pagopa-ecommerce-user-stats-net
     depends_on:
       - mongo
 
@@ -33,15 +33,17 @@ services:
     ports:
       - "27017:27017"
     networks:
-      - pagopa-ecommerce-user-net
+      - pagopa-ecommerce-user-stats-net
     healthcheck:
       test: echo "db.stats().ok" | mongo --quiet
       interval: 10s
+    volumes:
+      - ./docker/config/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
 
 
 networks:
-  pagopa-ecommerce-user-net:
+  pagopa-ecommerce-user-stats-net:
     driver: bridge
 
 
