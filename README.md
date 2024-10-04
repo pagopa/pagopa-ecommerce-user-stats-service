@@ -70,6 +70,7 @@ If you want to customize the application environment, reference this table:
 | MONGO_HOST                        | Host where MongoDB instance used to persise events and view resides                                                                                        | string |         |
 | MONGO_USERNAME                    | Username used for connecting to MongoDB instance                                                                                                           | string |         |
 | MONGO_PASSWORD                    | Password used for connecting to MongoDB instance                                                                                                           | string |         |
+| MONGO_SSL_ENABLED                 | Whether SSL is enabled while connecting to MongoDB                                                                                                         | string |         |
 | MONGO_PORT                        | Port used for connecting to MongoDB instance                                                                                                               | string |         |
 | MONGO_MIN_POOL_SIZE               | Min amount of connections to be retained into connection pool. See docs *                                                                                  | string |         |
 | MONGO_MAX_POOL_SIZE               | Max amount of connections to be retained into connection pool.See docs *                                                                                   | string |         |
