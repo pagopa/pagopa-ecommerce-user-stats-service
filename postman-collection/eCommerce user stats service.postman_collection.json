@@ -1,0 +1,139 @@
+{
+	"info": {
+		"_postman_id": "f8f94089-f9bf-486e-8a04-0b104056e1f2",
+		"name": "eCommerce user stats service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23963988"
+	},
+	"item": [
+		{
+			"name": "Update user last usage [GUEST]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-user-id",
+						"value": "{{USER_ID}}",
+						"type": "text"
+					},
+					{
+						"key": "ocp-apim-subscription-key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"guest\",\n    \"paymentMethodId\": \"f0b11a9b-8189-45a8-9504-e54463371005\",\n    \"date\": \"2024-10-04T17:30:55.17568+02:00\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}{{BASE_PATH}}/user/lastPaymentMethodUsed",
+					"host": [
+						"{{HOSTNAME}}{{BASE_PATH}}"
+					],
+					"path": [
+						"user",
+						"lastPaymentMethodUsed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user last usage [WALLET]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-user-id",
+						"value": "{{USER_ID}}",
+						"type": "text"
+					},
+					{
+						"key": "ocp-apim-subscription-key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"wallet\",\n    \"walletId\": \"f0b11a9b-8189-45a8-9504-e54463371005\",\n    \"date\": \"2024-10-04T17:30:55.17568+02:00\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}{{BASE_PATH}}/user/lastPaymentMethodUsed",
+					"host": [
+						"{{HOSTNAME}}{{BASE_PATH}}"
+					],
+					"path": [
+						"user",
+						"lastPaymentMethodUsed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve user last used method",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-user-id",
+						"value": "{{USER_ID}}",
+						"type": "text"
+					},
+					{
+						"key": "ocp-apim-subscription-key",
+						"value": "{{API_SUBSCRIPTION_KEY}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOSTNAME}}{{BASE_PATH}}/user/lastPaymentMethodUsed",
+					"host": [
+						"{{HOSTNAME}}{{BASE_PATH}}"
+					],
+					"path": [
+						"user",
+						"lastPaymentMethodUsed"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
