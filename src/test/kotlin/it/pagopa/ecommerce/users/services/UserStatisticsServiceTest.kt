@@ -16,9 +16,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentCaptor
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.*
 import reactor.core.publisher.Hooks
-import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
 class UserStatisticsServiceTest {
