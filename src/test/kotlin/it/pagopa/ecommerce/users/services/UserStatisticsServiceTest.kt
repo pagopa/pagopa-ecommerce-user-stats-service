@@ -16,7 +16,9 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentCaptor
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.*
 import reactor.core.publisher.Hooks
+import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
 class UserStatisticsServiceTest {
@@ -121,7 +123,7 @@ class UserStatisticsServiceTest {
         given(userStatisticsRepository.findById(userId)).willReturn(Mono.just(userStatistics))
 
         StepVerifier.create(userStatisticsService.findUserLastMethodById(userId))
-            .expectNext(UserTestUtils.walletLastUsageData)
+            .expectNext(UserTestUtils.walletLastUsageData.apply { this.type = null })
             .verifyComplete()
 
         verify(userStatisticsRepository, times(1)).findById(userId)

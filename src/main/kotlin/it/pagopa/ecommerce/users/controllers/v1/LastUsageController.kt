@@ -1,10 +1,11 @@
 package it.pagopa.ecommerce.users.controllers.v1
 
+import it.pagopa.ecommerce.users.services.UserStatisticsService
 import it.pagopa.generated.ecommerce.users.api.UserApi
 import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
-import it.pagopa.generated.ecommerce.users.model.WalletLastUsageData
-import java.time.OffsetDateTime
 import java.util.*
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono
 @RestController("LastUsageControllerV1")
 class LastUsageController(@Autowired private val userStatisticsService: UserStatisticsService) :
     UserApi {
+
     override fun getLastPaymentMethodUsed(
         xUserId: UUID,
         exchange: ServerWebExchange
