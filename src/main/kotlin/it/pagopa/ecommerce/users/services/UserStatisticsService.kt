@@ -24,6 +24,7 @@ class UserStatisticsService(
 
     /** Find user last method by id */
     fun findUserLastMethodById(userId: String): Mono<UserLastPaymentMethodData> {
+        logger.info("Finding last method used for userId: [{}]", userId)
         return userStatisticsRepository
             .findById(userId)
             .switchIfEmpty(
@@ -35,6 +36,7 @@ class UserStatisticsService(
                 }
             )
             .map { mapUserStatisticsToUserLastPaymentMethodData(it.lastUsage) }
+            .doOnNext { logger.info("Last used data found for userId: [{}] -> {}", userId, it) }
     }
 
     /** Save user last payment method data */
@@ -42,6 +44,11 @@ class UserStatisticsService(
         userId: UUID,
         userLastPaymentMethodData: UserLastPaymentMethodData
     ): Mono<Unit> {
+        logger.info(
+            "Saving last used method for userId: [{}]. Last method used data: [{}]",
+            userId,
+            userLastPaymentMethodData
+        )
         return mono { userLastPaymentMethodData }
             .map {
                 it.let {
