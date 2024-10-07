@@ -81,7 +81,6 @@ class UserStatisticsService(
                 WalletLastUsageData()
                     .walletId(lastUsage.instrumentId)
                     .date(lastUsage.date)
-                    .type(lastUsage.type.toString().lowercase(Locale.getDefault()))
             LastUsage.PaymentType.GUEST ->
                 GuestMethodLastUsageData()
                     .paymentMethodId(lastUsage.instrumentId)
