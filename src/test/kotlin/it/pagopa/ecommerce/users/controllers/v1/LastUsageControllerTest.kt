@@ -1,14 +1,17 @@
 package it.pagopa.ecommerce.users.controllers.v1
 
 import it.pagopa.ecommerce.users.UserTestUtils
+import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
 import it.pagopa.ecommerce.users.services.UserStatisticsService
 import it.pagopa.generated.ecommerce.users.model.GuestMethodLastUsageData
 import it.pagopa.generated.ecommerce.users.model.ProblemJson
+import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
+import it.pagopa.generated.ecommerce.users.model.WalletLastUsageData
 import java.time.ZoneId
 import java.util.*
 import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.*
 import org.mockito.kotlin.any
@@ -19,6 +22,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
+import reactor.core.publisher.Mono
 
 @WebFluxTest(LastUsageController::class)
 @TestPropertySource(locations = ["classpath:application.test.properties"])
@@ -26,6 +30,37 @@ class LastUsageControllerTest {
     @Autowired lateinit var webClient: WebTestClient
 
     @MockBean lateinit var userStatisticsService: UserStatisticsService
+
+    @Test
+    fun `Should return last used method for valid userId`() = runTest {
+        val lastUsageData = UserTestUtils.walletLastUsageData
+        val userId = UserTestUtils.userId.toString()
+        given(
+                userStatisticsService.findUserLastMethodById(
+                    userId = any(),
+                )
+            )
+            .willReturn(mono { lastUsageData })
+
+        webClient
+            .get()
+            .uri("/user/lastPaymentMethodUsed")
+            .header("x-user-id", userId)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody(UserLastPaymentMethodData::class.java)
+            .consumeWith {
+                val actualResponse =
+                    (it.responseBody as WalletLastUsageData).apply {
+                        // workaround to set jackson parsed request to the system default
+                        // one
+                        this.date =
+                            this.date.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
+                    }
+                assertEquals(lastUsageData, actualResponse)
+            }
+    }
 
     @Test
     fun `Should return bad request for invalid UUID retrieving user last method usage data`() =
@@ -46,6 +81,36 @@ class LastUsageControllerTest {
                 .expectBody(ProblemJson::class.java)
                 .isEqualTo(expectedErrorResponse)
         }
+
+    @Test
+    fun `Should return not found with not present user`() = runTest {
+        val expectedErrorResponse =
+            ProblemJson().apply {
+                this.status = HttpStatus.NOT_FOUND.value()
+                this.title = "User not found"
+                this.detail = "The input user cannot be found"
+            }
+        val userId = UUID.randomUUID().toString()
+        given(userStatisticsService.findUserLastMethodById(userId = any()))
+            .willReturn(
+                Mono.error(
+                    UserNotFoundException(
+                        message = "User with id [${userId}] not found",
+                        cause = null
+                    )
+                )
+            )
+
+        webClient
+            .get()
+            .uri("/user/lastPaymentMethodUsed")
+            .header("x-user-id", userId)
+            .exchange()
+            .expectStatus()
+            .isNotFound
+            .expectBody(ProblemJson::class.java)
+            .isEqualTo(expectedErrorResponse)
+    }
 
     @Test
     fun `Should return bad request for invalid UUID saving user last method usage data`() =

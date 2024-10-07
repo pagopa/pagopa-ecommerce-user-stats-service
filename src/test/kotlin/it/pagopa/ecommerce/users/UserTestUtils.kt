@@ -17,15 +17,10 @@ object UserTestUtils {
 
     val lastUsageDate = OffsetDateTime.now()
 
-    fun userStatisticsByType(type: LastUsage.PaymentType): UserStatistics =
+    fun userStatisticsByType(type: LastUsage.PaymentType, instrumentId: UUID): UserStatistics =
         UserStatistics(
-            userId = UUID.randomUUID().toString(),
-            lastUsage =
-                LastUsage(
-                    type = type,
-                    instrumentId = UUID.randomUUID(),
-                    date = OffsetDateTime.now()
-                )
+            userId = userId.toString(),
+            lastUsage = LastUsage(type = type, instrumentId = instrumentId, date = lastUsageDate)
         )
 
     val guestMethodLastUsageData =
