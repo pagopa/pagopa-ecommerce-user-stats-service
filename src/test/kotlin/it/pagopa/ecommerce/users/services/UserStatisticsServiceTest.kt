@@ -3,6 +3,7 @@ package it.pagopa.ecommerce.users.services
 import it.pagopa.ecommerce.users.UserTestUtils
 import it.pagopa.ecommerce.users.documents.LastUsage
 import it.pagopa.ecommerce.users.documents.UserStatistics
+import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
 import it.pagopa.ecommerce.users.repositories.UserStatisticsRepository
 import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
 import java.util.*
@@ -65,6 +66,29 @@ class UserStatisticsServiceTest {
                     )
                 )
             )
+
+        @JvmStatic
+        fun `Last used payment methods to get method source`(): Stream<Arguments> =
+            Stream.of(
+                // guest method
+                Arguments.of(
+                    UserTestUtils.userId,
+                    UserTestUtils.userStatisticsByType(
+                        LastUsage.PaymentType.WALLET,
+                        UserTestUtils.lastUsageWalletId
+                    ),
+                    UserTestUtils.walletLastUsageData.apply { this.type = null }
+                ),
+                // wallet method
+                Arguments.of(
+                    UserTestUtils.userId,
+                    UserTestUtils.userStatisticsByType(
+                        LastUsage.PaymentType.GUEST,
+                        UserTestUtils.lastUsagePaymentMethodId,
+                    ),
+                    UserTestUtils.guestMethodLastUsageData.apply { this.type = null }
+                )
+            )
     }
 
     @ParameterizedTest
@@ -112,32 +136,33 @@ class UserStatisticsServiceTest {
             .verify()
     }
 
-    @Test
-    fun `Should retrieve lastUsed method successfully`() {
-        val userStatistics =
-            UserTestUtils.userStatisticsByType(
-                LastUsage.PaymentType.WALLET,
-                UserTestUtils.lastUsageWalletId
-            )
-        val userId = userStatistics.userId
-        given(userStatisticsRepository.findById(userId)).willReturn(Mono.just(userStatistics))
+    @ParameterizedTest
+    @MethodSource("Last used payment methods to get method source")
+    fun `Should retrieve lastUsed method successfully`(
+        userId: UUID,
+        userStatistics: UserStatistics,
+        expectedLastUsageDate: UserLastPaymentMethodData
+    ) {
+        given(userStatisticsRepository.findById(userId.toString()))
+            .willReturn(Mono.just(userStatistics))
 
-        StepVerifier.create(userStatisticsService.findUserLastMethodById(userId))
-            .expectNext(UserTestUtils.walletLastUsageData.apply { this.type = null })
+        StepVerifier.create(userStatisticsService.findUserLastMethodById(userId.toString()))
+            .expectNext(expectedLastUsageDate)
             .verifyComplete()
 
-        verify(userStatisticsRepository, times(1)).findById(userId)
+        verify(userStatisticsRepository, times(1))
+            .findById(org.mockito.kotlin.eq(userId.toString()))
     }
 
     @Test
     fun `Should return error for not found user`() {
-        val userId = UUID.randomUUID().toString()
+        val userId = UserTestUtils.userId.toString()
         given(userStatisticsRepository.findById(userId)).willReturn(Mono.empty())
 
         StepVerifier.create(userStatisticsService.findUserLastMethodById(userId))
-            .expectError(Exception::class.java)
+            .expectError(UserNotFoundException::class.java)
             .verify()
 
-        verify(userStatisticsRepository, times(1)).findById(userId)
+        verify(userStatisticsRepository, times(1)).findById(org.mockito.kotlin.eq(userId))
     }
 }

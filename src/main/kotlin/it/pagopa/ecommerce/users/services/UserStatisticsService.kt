@@ -23,19 +23,19 @@ class UserStatisticsService(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     /** Find user last method by id */
-    fun findUserLastMethodById(userId: String): Mono<UserLastPaymentMethodData> {
+    fun findUserLastMethodById(userId: String): Mono<LastUsage> {
         logger.info("Finding last method used for userId: [{}]", userId)
         return userStatisticsRepository
             .findById(userId)
             .switchIfEmpty(
-                Mono.error {
+                Mono.error(
                     UserNotFoundException(
                         message = "User with id [${userId}] not found",
                         cause = null
                     )
-                }
+                )
             )
-            .map { mapUserStatisticsToUserLastPaymentMethodData(it.lastUsage) }
+            .map { it.lastUsage }
             .doOnNext { logger.info("Last used data found for userId: [{}] -> {}", userId, it) }
     }
 
@@ -79,16 +79,4 @@ class UserStatisticsService(
             .flatMap { userStatisticsRepository.save(it) }
             .thenReturn(Unit)
     }
-
-    private fun mapUserStatisticsToUserLastPaymentMethodData(
-        lastUsage: LastUsage
-    ): UserLastPaymentMethodData =
-        when (lastUsage.type) {
-            LastUsage.PaymentType.WALLET ->
-                WalletLastUsageData().walletId(lastUsage.instrumentId).date(lastUsage.date)
-            LastUsage.PaymentType.GUEST ->
-                GuestMethodLastUsageData()
-                    .paymentMethodId(lastUsage.instrumentId)
-                    .date(lastUsage.date)
-        }
 }
