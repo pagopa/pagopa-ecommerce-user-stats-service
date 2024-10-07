@@ -205,6 +205,151 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get last user method for unknown user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"[eCommerce user stats] Retrieve last usage information for unknown user should return 404\", function() {",
+							"    pm.response.to.have.status(404);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.title).to.eq(\"User not found\")",
+							"    pm.expect(response.status).to.eq(404)",
+							"    pm.expect(response.detail).to.eq(\"The input user cannot be found\")",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-user-id",
+						"value": "{{$guid}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOSTNAME}}{{BASE_PATH}}/user/lastPaymentMethodUsed",
+					"host": [
+						"{{HOSTNAME}}{{BASE_PATH}}"
+					],
+					"path": [
+						"user",
+						"lastPaymentMethodUsed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get last user method for invalid user id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"[eCommerce user stats] Retrieve last usage information for invalid user id should return 400\", function() {",
+							"    pm.response.to.have.status(400);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.title).to.eq(\"Bad request\")",
+							"    pm.expect(response.status).to.eq(400)",
+							"    pm.expect(response.detail).to.eq(\"Input request is invalid.\")",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-user-id",
+						"value": "invalid",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOSTNAME}}{{BASE_PATH}}/user/lastPaymentMethodUsed",
+					"host": [
+						"{{HOSTNAME}}{{BASE_PATH}}"
+					],
+					"path": [
+						"user",
+						"lastPaymentMethodUsed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user with invalid request",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"[eCommerce user stats] Update user with invalid request should return 400 bad request\", function() {",
+							"        pm.response.to.have.status(400);",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.title).to.eq(\"Bad request\")",
+							"    pm.expect(response.status).to.eq(400)",
+							"    pm.expect(response.detail).to.eq(\"Input request is invalid.\")",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-user-id",
+						"value": "{{USER_ID}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethodId\": \"{{PAYMENT_METHOD_ID}}\",\n    \"date\": \"{{GUEST_METHOD_LAST_USAGE_DATE}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOSTNAME}}{{BASE_PATH}}/user/lastPaymentMethodUsed",
+					"host": [
+						"{{HOSTNAME}}{{BASE_PATH}}"
+					],
+					"path": [
+						"user",
+						"lastPaymentMethodUsed"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
