@@ -1,6 +1,6 @@
 package it.pagopa.ecommerce.users.documents
 
-import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.*
 
 data class LastUsage(
@@ -9,7 +9,7 @@ data class LastUsage(
     /** The id of the method used to pay */
     val instrumentId: UUID,
     /** The date of the last usage */
-    val date: Instant
+    val date: OffsetDateTime
 ) {
 
     /** Payment type enumeration */
