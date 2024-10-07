@@ -85,6 +85,5 @@ class UserStatisticsService(
                 GuestMethodLastUsageData()
                     .paymentMethodId(lastUsage.instrumentId)
                     .date(lastUsage.date)
-                    .type(lastUsage.type.toString().lowercase(Locale.getDefault()))
         }
 }
