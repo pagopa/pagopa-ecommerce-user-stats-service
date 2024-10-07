@@ -5,6 +5,8 @@ import it.pagopa.ecommerce.users.warmup.annotations.WarmupFunction
 import it.pagopa.ecommerce.users.warmup.utils.WarmupUtils
 import it.pagopa.generated.ecommerce.users.api.UserApi
 import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
+import java.time.Duration
+import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
-import java.time.Duration
-import java.util.*
 
 @RestController("LastUsageControllerV1")
 class LastUsageController(
