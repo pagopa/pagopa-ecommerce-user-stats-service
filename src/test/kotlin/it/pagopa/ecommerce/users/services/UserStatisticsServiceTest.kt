@@ -6,6 +6,7 @@ import it.pagopa.ecommerce.users.documents.UserStatistics
 import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
 import it.pagopa.ecommerce.users.repositories.UserStatisticsRepository
 import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
+import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodRequest
 import java.util.*
 import java.util.stream.Stream
 import kotlin.test.Test
@@ -39,8 +40,7 @@ class UserStatisticsServiceTest {
             Stream.of(
                 // guest method
                 Arguments.of(
-                    UserTestUtils.userId,
-                    UserTestUtils.guestMethodLastUsageData,
+                    UserTestUtils.guestMethodLastUsageRequest,
                     UserStatistics(
                         userId = UserTestUtils.userId.toString(),
                         lastUsage =
@@ -53,8 +53,7 @@ class UserStatisticsServiceTest {
                 ),
                 // wallet method
                 Arguments.of(
-                    UserTestUtils.userId,
-                    UserTestUtils.walletLastUsageData,
+                    UserTestUtils.walletLastUsageRequest,
                     UserStatistics(
                         userId = UserTestUtils.userId.toString(),
                         lastUsage =
@@ -70,23 +69,23 @@ class UserStatisticsServiceTest {
         @JvmStatic
         fun `Last used payment methods to get method source`(): Stream<Arguments> =
             Stream.of(
-                // guest method
+                // wallet method
                 Arguments.of(
                     UserTestUtils.userId,
                     UserTestUtils.userStatisticsByType(
                         LastUsage.PaymentType.WALLET,
                         UserTestUtils.lastUsageWalletId
                     ),
-                    UserTestUtils.walletLastUsageData.apply { this.type = null }
+                    UserTestUtils.walletLastUsageDetails
                 ),
-                // wallet method
+                // guest method
                 Arguments.of(
                     UserTestUtils.userId,
                     UserTestUtils.userStatisticsByType(
                         LastUsage.PaymentType.GUEST,
                         UserTestUtils.lastUsagePaymentMethodId,
                     ),
-                    UserTestUtils.guestMethodLastUsageData.apply { this.type = null }
+                    UserTestUtils.guestLastUsageDetails
                 )
             )
     }
@@ -94,8 +93,7 @@ class UserStatisticsServiceTest {
     @ParameterizedTest
     @MethodSource("Last used payment methods to save method source")
     fun `Should save user last used method`(
-        userId: UUID,
-        requestDto: UserLastPaymentMethodData,
+        requestDto: UserLastPaymentMethodRequest,
         expectedSavedObject: UserStatistics
     ) = runTest {
         // pre-condition
@@ -107,8 +105,7 @@ class UserStatisticsServiceTest {
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 userStatisticsService.saveUserLastUsedMethodInfo(
-                    userId = userId,
-                    userLastPaymentMethodData = requestDto
+                    userLastPaymentMethodRequest = requestDto
                 )
             )
             .expectNext(Unit)
@@ -122,14 +119,15 @@ class UserStatisticsServiceTest {
     @Test
     fun `Should throw error for unhandled UserLastPaymentMethodData`() = runTest {
         // pre-condition
-        val userLastPaymentMethodData: UserLastPaymentMethodData = mock()
+        val userLastPaymentMethodData: UserLastPaymentMethodRequest = mock()
+        given(userLastPaymentMethodData.userId).willReturn(UserTestUtils.userId)
+        given(userLastPaymentMethodData.details).willReturn(mock())
 
         // test
         Hooks.onOperatorDebug()
         StepVerifier.create(
                 userStatisticsService.saveUserLastUsedMethodInfo(
-                    userId = UUID.randomUUID(),
-                    userLastPaymentMethodData = userLastPaymentMethodData
+                    userLastPaymentMethodRequest = userLastPaymentMethodData
                 )
             )
             .expectError(IllegalArgumentException::class.java)

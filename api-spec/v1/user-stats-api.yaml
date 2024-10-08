@@ -18,16 +18,7 @@ servers:
   - url: https://${hostname}
 paths:
   /user/lastPaymentMethodUsed:
-    post:
-      parameters:
-        - in: header
-          name: x-user-id
-          required: true
-          schema:
-            type: string
-            format: uuid
-            description: user id
-
+    put:
       operationId: saveLastPaymentMethodUsed
       tags:
         - user-stats
@@ -36,7 +27,7 @@ paths:
       requestBody:
         $ref: '#/components/requestBodies/UserLastPaymentMethodRequest'
       responses:
-        '201':
+        '204':
           description: User last payment method used updated successfully
         '400':
           description: Formally invalid input
@@ -128,6 +119,19 @@ components:
       maximum: 600
       exclusiveMaximum: true
       example: 200
+    UserLastPaymentMethodRequest:
+      type: object
+      description: Request to update last payment method used by an user
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: the user unique identifier
+        details:
+          $ref: '#/components/schemas/UserLastPaymentMethodData'
+      required:
+        - userId
+        - details
     UserLastPaymentMethodData:
       description: Last usage data for wallet or payment method (guest)
       oneOf:
@@ -185,4 +189,4 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UserLastPaymentMethodData'
+            $ref: '#/components/schemas/UserLastPaymentMethodRequest'
