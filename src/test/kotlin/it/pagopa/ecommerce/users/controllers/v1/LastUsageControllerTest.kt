@@ -3,10 +3,7 @@ package it.pagopa.ecommerce.users.controllers.v1
 import it.pagopa.ecommerce.users.UserTestUtils
 import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
 import it.pagopa.ecommerce.users.services.UserStatisticsService
-import it.pagopa.generated.ecommerce.users.model.GuestMethodLastUsageData
-import it.pagopa.generated.ecommerce.users.model.ProblemJson
-import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
-import it.pagopa.generated.ecommerce.users.model.WalletLastUsageData
+import it.pagopa.generated.ecommerce.users.model.*
 import java.time.ZoneId
 import java.util.*
 import kotlinx.coroutines.reactor.mono
@@ -121,7 +118,11 @@ class LastUsageControllerTest {
                     this.title = "Bad request"
                     this.detail = "Input request is invalid. Invalid fields: details"
                 }
-            val body = UserTestUtils.guestMethodLastUsageRequest.apply { this.details = null }
+            val body =
+                UserLastPaymentMethodRequest().apply {
+                    this.userId = UserTestUtils.userId
+                    this.details = null
+                }
             webClient
                 .put()
                 .uri("/user/lastPaymentMethodUsed")
