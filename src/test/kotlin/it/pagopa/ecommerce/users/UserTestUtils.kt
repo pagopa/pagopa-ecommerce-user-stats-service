@@ -1,7 +1,9 @@
 package it.pagopa.ecommerce.users
 
+import it.pagopa.ecommerce.users.documents.GuestLastUsageMethodDetails
 import it.pagopa.ecommerce.users.documents.LastUsage
 import it.pagopa.ecommerce.users.documents.UserStatistics
+import it.pagopa.ecommerce.users.documents.WalletLastUsageMethodDetails
 import it.pagopa.generated.ecommerce.users.model.GuestMethodLastUsageData
 import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodRequest
 import it.pagopa.generated.ecommerce.users.model.WalletLastUsageData
@@ -18,10 +20,25 @@ object UserTestUtils {
 
     val lastUsageDate: OffsetDateTime = OffsetDateTime.now()
 
-    fun userStatisticsByType(type: LastUsage.PaymentType, instrumentId: UUID): UserStatistics =
+    val walletLastUsageUserStatistics: UserStatistics =
         UserStatistics(
             userId = userId.toString(),
-            lastUsage = LastUsage(type = type, instrumentId = instrumentId, date = lastUsageDate)
+            lastUsage =
+                LastUsage(
+                    date = lastUsageDate,
+                    details = WalletLastUsageMethodDetails(walletId = lastUsageWalletId)
+                )
+        )
+
+    val guestLastUsageUserStatistics: UserStatistics =
+        UserStatistics(
+            userId = userId.toString(),
+            lastUsage =
+                LastUsage(
+                    date = lastUsageDate,
+                    details =
+                        GuestLastUsageMethodDetails(paymentMethodId = lastUsagePaymentMethodId)
+                )
         )
 
     val guestLastUsageDetails =

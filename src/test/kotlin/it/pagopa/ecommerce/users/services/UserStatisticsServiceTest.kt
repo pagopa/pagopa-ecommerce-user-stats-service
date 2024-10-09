@@ -1,7 +1,6 @@
 package it.pagopa.ecommerce.users.services
 
 import it.pagopa.ecommerce.users.UserTestUtils
-import it.pagopa.ecommerce.users.documents.LastUsage
 import it.pagopa.ecommerce.users.documents.UserStatistics
 import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
 import it.pagopa.ecommerce.users.repositories.UserStatisticsRepository
@@ -41,28 +40,12 @@ class UserStatisticsServiceTest {
                 // guest method
                 Arguments.of(
                     UserTestUtils.guestMethodLastUsageRequest,
-                    UserStatistics(
-                        userId = UserTestUtils.userId.toString(),
-                        lastUsage =
-                            LastUsage(
-                                type = LastUsage.PaymentType.GUEST,
-                                date = UserTestUtils.lastUsageDate,
-                                instrumentId = UserTestUtils.lastUsagePaymentMethodId
-                            )
-                    )
+                    UserTestUtils.guestLastUsageUserStatistics
                 ),
                 // wallet method
                 Arguments.of(
                     UserTestUtils.walletLastUsageRequest,
-                    UserStatistics(
-                        userId = UserTestUtils.userId.toString(),
-                        lastUsage =
-                            LastUsage(
-                                type = LastUsage.PaymentType.WALLET,
-                                date = UserTestUtils.lastUsageDate,
-                                instrumentId = UserTestUtils.lastUsageWalletId
-                            )
-                    )
+                    UserTestUtils.walletLastUsageUserStatistics
                 )
             )
 
@@ -72,19 +55,13 @@ class UserStatisticsServiceTest {
                 // wallet method
                 Arguments.of(
                     UserTestUtils.userId,
-                    UserTestUtils.userStatisticsByType(
-                        LastUsage.PaymentType.WALLET,
-                        UserTestUtils.lastUsageWalletId
-                    ),
+                    UserTestUtils.walletLastUsageUserStatistics,
                     UserTestUtils.walletLastUsageDetails
                 ),
                 // guest method
                 Arguments.of(
                     UserTestUtils.userId,
-                    UserTestUtils.userStatisticsByType(
-                        LastUsage.PaymentType.GUEST,
-                        UserTestUtils.lastUsagePaymentMethodId,
-                    ),
+                    UserTestUtils.guestLastUsageUserStatistics,
                     UserTestUtils.guestLastUsageDetails
                 )
             )
