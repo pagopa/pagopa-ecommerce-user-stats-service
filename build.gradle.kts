@@ -100,8 +100,10 @@ dependencyLocking { lockAllConfigurations() }
 
 sourceSets {
   main {
-    java { srcDirs("$buildDir/generated/src/main/java") }
-    kotlin { srcDirs("src/main/kotlin", "${layout.buildDirectory}/generated/src/main/kotlin") }
+    java { srcDirs("${layout.buildDirectory.get()}/generated/src/main/java") }
+    kotlin {
+      srcDirs("src/main/kotlin", "${layout.buildDirectory.get()}/generated/src/main/kotlin")
+    }
     resources { srcDirs("src/resources") }
   }
 }
@@ -190,7 +192,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("use
   description = "Generate stubs from openapi"
   generatorName.set("spring")
   inputSpec.set("$rootDir/api-spec/v1/user-stats-api.yaml")
-  outputDir.set("$buildDir/generated")
+  outputDir.set("${layout.buildDirectory.get()}/generated")
   apiPackage.set("it.pagopa.generated.ecommerce.users.api")
   modelPackage.set("it.pagopa.generated.ecommerce.users.model")
   generateApiTests.set(false)

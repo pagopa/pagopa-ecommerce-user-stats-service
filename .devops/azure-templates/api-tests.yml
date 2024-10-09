@@ -4,7 +4,7 @@ parameters:
     type: string
   - name: "API_TEST_FILE"
     type: string
-  - name: "TEST_FILE_PREFIX"
+  - name: "REPORT_FILE_NAME_PREFIX"
     type: string
   - name: 'TEST_DISPLAY_NAME'
     type: string
@@ -13,11 +13,11 @@ steps:
       yarn global add newman
     displayName: 'Newman installation'
   - script: |
-      newman run ${{ parameters.API_TEST_FILE }} -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/${{ parameters.TEST_FILE_PREFIX }}-api-TEST.xml
+      newman run ${{ parameters.API_TEST_FILE }} -e ${{ parameters.ENV_FILE }} --ignore-redirects --reporters cli,junit --reporter-junit-export Results/${{ parameters.REPORT_FILE_NAME_PREFIX }}-api-TEST.xml
     displayName: ${{ parameters.TEST_DISPLAY_NAME }}
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '**/${{ parameters.TEST_FILE_PREFIX }}-api-TEST.xml'
+      testResultsFiles: '**/${{ parameters.REPORT_FILE_NAME_PREFIX }}-api-TEST.xml'
       searchFolder: '$(System.DefaultWorkingDirectory)'
