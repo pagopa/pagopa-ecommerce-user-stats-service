@@ -90,6 +90,6 @@ stages:
               TEST_DISPLAY_NAME: "User stats api tests"
               ENV_FILE: "api-tests/user-stats-service/user-stats-service_ecommerce_local.postman_environment.json"
               API_TEST_FILE: "api-tests/user-stats-service/user-stats-service_ecommerce_local.postman_collection.json"
-              TEST_FILE_PREFIX: "wallet-api-test-cards"
+              REPORT_FILE_NAME_PREFIX: "user-stats-api-tests"
 
 
