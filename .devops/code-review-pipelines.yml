@@ -88,8 +88,8 @@ stages:
           - template: azure-templates/api-tests.yml
             parameters:
               TEST_DISPLAY_NAME: "User stats api tests"
-              ENV_FILE: "api-tests/user-stats-service/user-stats-service_ecommerce_local.postman_collection.json"
-              API_TEST_FILE: "api-tests/user-stats-service/user-stats-service_ecommerce_local.postman_environment.json"
+              ENV_FILE: "api-tests/user-stats-service/user-stats-service_ecommerce_local.postman_environment.json"
+              API_TEST_FILE: "api-tests/user-stats-service/user-stats-service_ecommerce_local.postman_collection.json"
               TEST_FILE_PREFIX: "wallet-api-test-cards"
 
 
