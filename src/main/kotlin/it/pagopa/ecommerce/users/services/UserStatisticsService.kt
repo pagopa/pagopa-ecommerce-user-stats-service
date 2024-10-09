@@ -1,7 +1,9 @@
 package it.pagopa.ecommerce.users.services
 
+import it.pagopa.ecommerce.users.documents.GuestLastUsageMethodDetails
 import it.pagopa.ecommerce.users.documents.LastUsage
 import it.pagopa.ecommerce.users.documents.UserStatistics
+import it.pagopa.ecommerce.users.documents.WalletLastUsageMethodDetails
 import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
 import it.pagopa.ecommerce.users.repositories.UserStatisticsRepository
 import it.pagopa.generated.ecommerce.users.model.GuestMethodLastUsageData
@@ -59,15 +61,17 @@ class UserStatisticsService(
                             when (it) {
                                 is GuestMethodLastUsageData ->
                                     LastUsage(
-                                        type = LastUsage.PaymentType.GUEST,
-                                        instrumentId = it.paymentMethodId,
-                                        date = it.date
+                                        date = it.date,
+                                        details =
+                                            GuestLastUsageMethodDetails(
+                                                paymentMethodId = it.paymentMethodId
+                                            )
                                     )
                                 is WalletLastUsageData ->
                                     LastUsage(
-                                        type = LastUsage.PaymentType.WALLET,
-                                        instrumentId = it.walletId,
-                                        date = it.date
+                                        date = it.date,
+                                        details =
+                                            WalletLastUsageMethodDetails(walletId = it.walletId)
                                     )
                                 else ->
                                     throw IllegalArgumentException(
@@ -84,15 +88,15 @@ class UserStatisticsService(
     private fun mapUserStatisticsToUserLastPaymentMethodData(
         lastUsage: LastUsage
     ): UserLastPaymentMethodData =
-        when (lastUsage.type) {
-            LastUsage.PaymentType.WALLET ->
+        when (lastUsage.details) {
+            is WalletLastUsageMethodDetails ->
                 WalletLastUsageData()
-                    .walletId(lastUsage.instrumentId)
+                    .walletId(lastUsage.details.walletId)
                     .date(lastUsage.date)
                     .type("wallet")
-            LastUsage.PaymentType.GUEST ->
+            is GuestLastUsageMethodDetails ->
                 GuestMethodLastUsageData()
-                    .paymentMethodId(lastUsage.instrumentId)
+                    .paymentMethodId(lastUsage.details.paymentMethodId)
                     .date(lastUsage.date)
                     .type("guest")
         }
