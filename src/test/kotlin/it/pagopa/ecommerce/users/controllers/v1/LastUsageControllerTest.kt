@@ -3,10 +3,7 @@ package it.pagopa.ecommerce.users.controllers.v1
 import it.pagopa.ecommerce.users.UserTestUtils
 import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
 import it.pagopa.ecommerce.users.services.UserStatisticsService
-import it.pagopa.generated.ecommerce.users.model.GuestMethodLastUsageData
-import it.pagopa.generated.ecommerce.users.model.ProblemJson
-import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
-import it.pagopa.generated.ecommerce.users.model.WalletLastUsageData
+import it.pagopa.generated.ecommerce.users.model.*
 import java.time.ZoneId
 import java.util.*
 import kotlinx.coroutines.reactor.mono
@@ -33,7 +30,7 @@ class LastUsageControllerTest {
 
     @Test
     fun `Should return last used method for valid userId`() = runTest {
-        val lastUsageData = UserTestUtils.walletLastUsageData
+        val lastUsageData = UserTestUtils.walletLastUsageDetails
         val userId = UserTestUtils.userId.toString()
         given(
                 userStatisticsService.findUserLastMethodById(
@@ -113,57 +110,22 @@ class LastUsageControllerTest {
     }
 
     @Test
-    fun `Should return bad request for invalid UUID saving user last method usage data`() =
-        runTest {
-            val expectedErrorResponse =
-                ProblemJson().apply {
-                    this.status = HttpStatus.BAD_REQUEST.value()
-                    this.title = "Bad request"
-                    this.detail = "Input request is invalid."
-                }
-            val body =
-                """
-            {
-                "type": "wallet",
-                "walletId": "e20284cf-88f8-4b3b-aaa7-5f909becb8e2",
-                "date": "2024-10-03T16:13:26.628548+02:00"
-            }
-        """
-                    .trimIndent()
-            webClient
-                .post()
-                .uri("/user/lastPaymentMethodUsed")
-                .header("x-user-id", "invalid")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(body)
-                .exchange()
-                .expectStatus()
-                .isBadRequest
-                .expectBody(ProblemJson::class.java)
-                .isEqualTo(expectedErrorResponse)
-        }
-
-    @Test
     fun `Should return bad request for invalid request saving user last method usage data`() =
         runTest {
             val expectedErrorResponse =
                 ProblemJson().apply {
                     this.status = HttpStatus.BAD_REQUEST.value()
                     this.title = "Bad request"
-                    this.detail = "Input request is invalid. Invalid fields: walletId"
+                    this.detail = "Input request is invalid. Invalid fields: details"
                 }
             val body =
-                """
-            {
-                "type": "wallet",
-                "date": "2024-10-03T16:13:26.628548+02:00"
-            }
-        """
-                    .trimIndent()
+                UserLastPaymentMethodRequest().apply {
+                    this.userId = UserTestUtils.userId
+                    this.details = null
+                }
             webClient
-                .post()
+                .put()
                 .uri("/user/lastPaymentMethodUsed")
-                .header("x-user-id", UUID.randomUUID().toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
                 .exchange()
@@ -174,39 +136,37 @@ class LastUsageControllerTest {
         }
 
     @Test
-    fun `Should return HTTP 201 created saving last usage to DB successfully`() = runTest {
+    fun `Should return HTTP 204 created saving last usage to DB successfully`() = runTest {
 
         // pre-conditions
-        val expectedRequest = UserTestUtils.guestMethodLastUsageData
+        val expectedRequest = UserTestUtils.guestMethodLastUsageRequest
         val userId = UserTestUtils.userId
         given(
                 userStatisticsService.saveUserLastUsedMethodInfo(
-                    userId = any(),
-                    userLastPaymentMethodData = any()
+                    userLastPaymentMethodRequest = any()
                 )
             )
             .willReturn(mono {})
         // test
         webClient
-            .post()
+            .put()
             .uri("/user/lastPaymentMethodUsed")
-            .header("x-user-id", userId.toString())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(expectedRequest)
             .exchange()
             .expectStatus()
-            .isCreated
+            .isNoContent
         verify(userStatisticsService, times(1))
             .saveUserLastUsedMethodInfo(
-                userId = org.mockito.kotlin.eq(userId),
-                userLastPaymentMethodData =
+                userLastPaymentMethodRequest =
                     org.mockito.kotlin.argThat {
                         val actualRequest =
-                            (this as GuestMethodLastUsageData).apply {
+                            this.apply {
                                 // workaround to set jackson parsed request to the system default
                                 // one
-                                this.date =
-                                    this.date
+                                val details = this.details as (GuestMethodLastUsageData)
+                                details.date =
+                                    details.date
                                         .atZoneSameInstant(ZoneId.systemDefault())
                                         .toOffsetDateTime()
                             }

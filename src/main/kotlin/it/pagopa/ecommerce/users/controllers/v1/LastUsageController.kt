@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.users.warmup.annotations.WarmupFunction
 import it.pagopa.ecommerce.users.warmup.utils.WarmupUtils
 import it.pagopa.generated.ecommerce.users.api.UserApi
 import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
+import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodRequest
 import java.time.Duration
 import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,23 +41,21 @@ class LastUsageController(
      */
     @SuppressWarnings("kotlin:S6508")
     override fun saveLastPaymentMethodUsed(
-        xUserId: UUID,
-        userLastPaymentMethodDataDto: Mono<UserLastPaymentMethodData>,
+        userLastPaymentMethodRequest: Mono<UserLastPaymentMethodRequest>,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<Void>> =
-        userLastPaymentMethodDataDto.flatMap {
+        userLastPaymentMethodRequest.flatMap {
             userStatisticsService
-                .saveUserLastUsedMethodInfo(userId = xUserId, userLastPaymentMethodData = it)
-                .map { ResponseEntity.status(HttpStatus.CREATED).build() }
+                .saveUserLastUsedMethodInfo(userLastPaymentMethodRequest = it)
+                .map { ResponseEntity.status(HttpStatus.NO_CONTENT).build() }
         }
 
     @WarmupFunction
     fun saveAndGetUserLastPaymentMethodUsedWarmupFunction() {
         webClient
-            .post()
+            .put()
             .uri(WarmupUtils.LAST_PAYMENT_METHOD_USED_PATH)
             .bodyValue(WarmupUtils.warmupLastMethodUsedBody)
-            .header(WarmupUtils.X_USER_ID_HEADER_KEY, WarmupUtils.zeroUUID.toString())
             .retrieve()
             .toBodilessEntity()
             .flatMap {

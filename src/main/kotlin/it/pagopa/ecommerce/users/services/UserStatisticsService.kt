@@ -6,8 +6,8 @@ import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
 import it.pagopa.ecommerce.users.repositories.UserStatisticsRepository
 import it.pagopa.generated.ecommerce.users.model.GuestMethodLastUsageData
 import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
+import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodRequest
 import it.pagopa.generated.ecommerce.users.model.WalletLastUsageData
-import java.util.*
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,9 +41,10 @@ class UserStatisticsService(
 
     /** Save user last payment method data */
     fun saveUserLastUsedMethodInfo(
-        userId: UUID,
-        userLastPaymentMethodData: UserLastPaymentMethodData
+        userLastPaymentMethodRequest: UserLastPaymentMethodRequest
     ): Mono<Unit> {
+        val userId = userLastPaymentMethodRequest.userId
+        val userLastPaymentMethodData = userLastPaymentMethodRequest.details
         logger.info(
             "Saving last used method for userId: [{}]. Last method used data: [{}]",
             userId,
@@ -85,10 +86,14 @@ class UserStatisticsService(
     ): UserLastPaymentMethodData =
         when (lastUsage.type) {
             LastUsage.PaymentType.WALLET ->
-                WalletLastUsageData().walletId(lastUsage.instrumentId).date(lastUsage.date)
+                WalletLastUsageData()
+                    .walletId(lastUsage.instrumentId)
+                    .date(lastUsage.date)
+                    .type("wallet")
             LastUsage.PaymentType.GUEST ->
                 GuestMethodLastUsageData()
                     .paymentMethodId(lastUsage.instrumentId)
                     .date(lastUsage.date)
+                    .type("guest")
         }
 }
