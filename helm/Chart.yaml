@@ -1,5 +1,5 @@
 apiVersion: v2
-name: wallet
+name: pagopa-ecommerce-user-stats-service
 description: Microservice that handles user stats
 type: application
 version: 1.0.1
