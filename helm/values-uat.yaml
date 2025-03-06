@@ -5,18 +5,17 @@ microservice-chart:
   canaryDelivery:
     create: false
     ingress:
-      create: true
-      canary:
-        type: bluegreen
-    service:
-      create: true
-    deployment:
-      create: true
-      image:
-        repository: pagopaucommonacr.azurecr.io/pagopaecommerceuserstatsservice
-        tag: "latest"
-        pullPolicy: Always
-      envConfig: {}
+      bluegreen: false
+      #set canary deployment with traffic balancing see https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#canary for more info
+      header: true
+      headerName: deployment
+      headerValue: blue
+      weightPercent: 10
+    image:
+      repository: pagopaucommonacr.azurecr.io/pagopaecommerceuserstatsservice
+      tag: "latest"
+    envConfig: {}
+    envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommerceuserstatsservice
     tag: "1.0.2"
@@ -52,8 +51,8 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
-    name: ""
+    annotations: { }
+    name: "ecommerce-workload-identity"
   podAnnotations: {}
   podSecurityContext:
     seccompProfile:
@@ -125,3 +124,5 @@ microservice-chart:
                 operator: In
                 values:
                   - user
+  azure:
+    workloadIdentityClientId: 449c5b65-f368-487a-881a-b03676420c53
