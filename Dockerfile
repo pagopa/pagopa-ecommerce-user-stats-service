@@ -36,6 +36,6 @@ RUN true
 COPY --from=build --chown=user ${EXTRACTED}/application/ ./
 RUN true
 
-
+ENV JAVA_TOOL_OPTIONS="-XX:UseSVE=0"
 ENTRYPOINT ["java","-javaagent:opentelemetry-javaagent.jar","org.springframework.boot.loader.launch.JarLauncher"]
 
