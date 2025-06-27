@@ -11,7 +11,7 @@ resources:
     - repository: pagopaEcommerceLocal
       type: github
       name: pagopa/pagopa-ecommerce-local
-      ref: main
+      ref: CHK-4261-user-stats-service-service-api-key
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
