@@ -40,7 +40,7 @@ dependencyManagement {
   // spring boot BOM
   imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.5") }
   // spring cloud BOM
-  imports { mavenBom("com.azure.spring:spring-cloud-azure-dependencies:5.16.0") }
+  imports { mavenBom("com.azure.spring:spring-cloud-azure-dependencies:5.22.0") }
   // Kotlin BOM
   imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:2.2.0") }
   imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.1") }
