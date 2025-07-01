@@ -80,6 +80,9 @@ If you want to customize the application environment, reference this table:
 | MONGO_SERVER_SELECTION_TIMEOUT_MS | Max time to wait for a server to be selected while performing a communication with Mongo in milliseconds. See docs *                                       | string |         |
 | MONGO_WAITING_QUEUE_MS            | Max time a thread has to wait for a connection to be available in milliseconds. See docs *                                                                 | string |         |
 | MONGO_HEARTBEAT_FREQUENCY_MS      | Hearth beat frequency in milliseconds. This is an hello command that is sent periodically on each active connection to perform an health check. See docs * | string |         |
+| SECURITY_API_KEYS_SECURED_PATHS   | Comma-separated list of secured API paths                                                                                                                  | string |         |
+| SECURITY_API_KEYS_PRIMARY         | Secured api primary key                                                                                                                                    | string |         |
+| SECURITY_API_KEYS_SECONDARY       | Secured api secondary key                                                                                                                                  | string |         |
 
 (*): for Mongo connection string options
 see [docs](https://www.mongodb.com/docs/drivers/java/sync/v4.3/fundamentals/connection/connection-options/#connection-options)
