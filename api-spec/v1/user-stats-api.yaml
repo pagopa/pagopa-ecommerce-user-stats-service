@@ -16,6 +16,8 @@ externalDocs:
   description: Design review
 servers:
   - url: https://${hostname}
+security:
+  - ApiKeyAuth: [ ]
 paths:
   /user/lastPaymentMethodUsed:
     put:
@@ -190,3 +192,9 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UserLastPaymentMethodRequest'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: api key authentication

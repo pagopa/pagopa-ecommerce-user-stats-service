@@ -108,8 +108,11 @@ microservice-chart:
     OTEL_TRACES_SAMPLER: "always_on"
     ECS_SERVICE_NAME: pagopa-ecommerce-user-stats-service
     ECS_SERVICE_ENVIRONMENT: "uat"
+    SECURITY_API_KEYS_SECURED_PATHS: /user
   envSecret:
     MONGO_PASSWORD: mongo-ecommerce-password
+    SECURITY_API_KEYS_PRIMARY: ecommerce-user-stats-service-primary-api-key
+    SECURITY_API_KEYS_SECONDARY: ecommerce-user-stats-service-secondary-api-key
   keyvault:
     name: "pagopa-u-ecommerce-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
