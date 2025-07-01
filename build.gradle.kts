@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "it.pagopa.ecommerce.users"
 
-version = "1.1.1"
+version = "1.2.0"
 
 description = "pagopa-ecommerce-user-stats-service"
 
