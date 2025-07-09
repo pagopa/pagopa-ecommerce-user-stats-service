@@ -102,7 +102,7 @@ $ docker compose up --build
 - git
 - gradle
 - jdk-21
-- kotlin 1.9
+- kotlin 2.2
 
 ### Run the project
 

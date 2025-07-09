@@ -8,14 +8,14 @@ description = "pagopa-ecommerce-user-stats-service"
 
 plugins {
   id("java")
-  id("org.springframework.boot") version "3.3.4"
+  id("org.springframework.boot") version "3.4.5"
   id("io.spring.dependency-management") version "1.1.6"
-  id("com.diffplug.spotless") version "6.18.0"
-  id("org.openapi.generator") version "6.3.0"
+  id("com.diffplug.spotless") version "6.25.0"
+  id("org.openapi.generator") version "7.6.0"
   id("org.sonarqube") version "4.0.0.2929"
   id("com.dipien.semantic-version") version "2.0.0" apply false
-  kotlin("plugin.spring") version "1.8.10"
-  kotlin("jvm") version "1.9.25"
+  kotlin("plugin.spring") version "2.2.0"
+  kotlin("jvm") version "2.2.0"
   jacoco
   application
 }
@@ -38,12 +38,12 @@ object Dependencies {
 
 dependencyManagement {
   // spring boot BOM
-  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.3.4") }
+  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.5") }
   // spring cloud BOM
-  imports { mavenBom("com.azure.spring:spring-cloud-azure-dependencies:5.16.0") }
+  imports { mavenBom("com.azure.spring:spring-cloud-azure-dependencies:5.22.0") }
   // Kotlin BOM
-  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:1.9.25") }
-  imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.9.0") }
+  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:2.2.0") }
+  imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.1") }
 }
 
 dependencies {
@@ -58,6 +58,7 @@ dependencies {
   // spring cloud azure dependencies
   implementation("com.azure.spring:spring-cloud-azure-starter")
   implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
+  implementation("com.azure:azure-identity")
 
   // Kotlin dependencies
   implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -118,7 +119,7 @@ java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 tasks.withType<KotlinCompile> {
   dependsOn("user-stats-v1")
   compilerOptions {
-    apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9)
+    apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
     freeCompilerArgs.addAll("-Xjsr305=strict")
   }
 }
