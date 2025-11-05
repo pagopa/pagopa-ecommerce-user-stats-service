@@ -1,6 +1,7 @@
 # PagoPA eCommerce user stats service
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-ecommerce-user-stats-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=pagopa_pagopa-ecommerce-user-stats-service)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-ecommerce-user-stats-service&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pagopa_pagopa-ecommerce-user-stats-service)
 
 This microservice is responsible for expose stats for user performing transactions on eCommerce.
 
