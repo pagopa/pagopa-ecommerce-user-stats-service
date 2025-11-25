@@ -294,7 +294,7 @@ components:
       in: header
       name: x-api-key
       description: api key authentication
-    headers:
+  headers:
     RateLimitLimit:
       description: The maximum number of requests allowed in the current time window.
       schema:
