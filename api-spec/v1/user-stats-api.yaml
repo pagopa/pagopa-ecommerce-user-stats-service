@@ -57,12 +57,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemJson'
-        '429':
-          description: Too many requests
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemJson'
         '500':
           description: Unexpected error updating user last used payment method
           content:
@@ -98,12 +92,6 @@ paths:
                 $ref: '#/components/schemas/ProblemJson'
         '401':
           description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemJson'
-        '429':
-          description: Too many requests
           content:
             application/json:
               schema:
