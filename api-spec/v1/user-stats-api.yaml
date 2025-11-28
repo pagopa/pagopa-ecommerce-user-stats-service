@@ -21,14 +21,10 @@ externalDocs:
   url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
   description: Design review
 servers:
-  - url: https://${host}
+  - url: https://${hostname}
     variables:
-      host:
-          description: The hostname of the API server
-          default: api.dev.platform.pagopa.it
-          enum:
-            - api.dev.platform.pagopa.it
-            - api.uat.platform.pagopa.it
+      hostname:
+        description: The hostname of the API server
 security:
   - ApiKeyAuth: [ ]
 paths:
