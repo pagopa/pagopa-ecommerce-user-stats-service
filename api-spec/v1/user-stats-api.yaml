@@ -25,6 +25,11 @@ servers:
     variables:
       hostname:
         description: The hostname of the API server
+        default: weuprod.ecommerce.internal.platform.pagopa.it
+        enum:
+          - weudev.ecommerce.internal.dev.platform.pagopa.it
+          - weuuat.ecommerce.internal.uat.platform.pagopa.it
+          - weuprod.ecommerce.internal.platform.pagopa.it
 security:
   - ApiKeyAuth: [ ]
 paths:
