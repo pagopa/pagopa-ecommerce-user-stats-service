@@ -5,17 +5,30 @@ info:
   description: This microservice handles statistics for payment performed by an authenticated used on eCommerce
   contact:
     name: pagoPA - Touchpoints team
+    url: https://www.pagopa.it/
+  license:
+    name: EUPL-1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 tags:
   - name: lastUsage
     description: Api's for tracing and retrieve user statistics
     externalDocs:
       url: TODO
       description: Technical specifications
+  - name: user-stats
 externalDocs:
   url: https://pagopa.atlassian.net/wiki/spaces/I/pages/492339720/pagoPA+eCommerce+Design+Review
   description: Design review
 servers:
   - url: https://${hostname}
+    variables:
+      hostname:
+        description: The hostname of the API server
+        default: weuprod.ecommerce.internal.platform.pagopa.it
+        enum:
+          - weudev.ecommerce.internal.dev.platform.pagopa.it
+          - weuuat.ecommerce.internal.uat.platform.pagopa.it
+          - weuprod.ecommerce.internal.platform.pagopa.it
 security:
   - ApiKeyAuth: [ ]
 paths:
@@ -33,6 +46,12 @@ paths:
           description: User last payment method used updated successfully
         '400':
           description: Formally invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -66,6 +85,12 @@ paths:
                 $ref: '#/components/schemas/UserLastPaymentMethodData'
         '404':
           description: No information found for the input user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemJson'
+        '401':
+          description: Unauthorized
           content:
             application/json:
               schema:
