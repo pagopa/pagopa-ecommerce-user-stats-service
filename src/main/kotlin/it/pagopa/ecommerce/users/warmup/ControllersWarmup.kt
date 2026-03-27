@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
+
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         val restControllers =
             event.applicationContext.getBeansWithAnnotation<RestController>().map { it.value }

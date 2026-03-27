@@ -10,6 +10,9 @@ import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.NullSource
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.BDDMockito.*
 import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,6 +46,7 @@ class LastUsageControllerTest {
             .get()
             .uri("/user/lastPaymentMethodUsed")
             .header("x-user-id", userId)
+            .header("x-api-key", "primary-key")
             .exchange()
             .expectStatus()
             .isOk
@@ -72,6 +76,7 @@ class LastUsageControllerTest {
                 .get()
                 .uri("/user/lastPaymentMethodUsed")
                 .header("x-user-id", "invalid")
+                .header("x-api-key", "primary-key")
                 .exchange()
                 .expectStatus()
                 .isBadRequest
@@ -102,6 +107,7 @@ class LastUsageControllerTest {
             .get()
             .uri("/user/lastPaymentMethodUsed")
             .header("x-user-id", userId)
+            .header("x-api-key", "primary-key")
             .exchange()
             .expectStatus()
             .isNotFound
@@ -126,6 +132,7 @@ class LastUsageControllerTest {
             webClient
                 .put()
                 .uri("/user/lastPaymentMethodUsed")
+                .header("x-api-key", "primary-key")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
                 .exchange()
@@ -151,6 +158,7 @@ class LastUsageControllerTest {
         webClient
             .put()
             .uri("/user/lastPaymentMethodUsed")
+            .header("x-api-key", "primary-key")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(expectedRequest)
             .exchange()
@@ -174,5 +182,24 @@ class LastUsageControllerTest {
                         true
                     }
             )
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["invalid-key"])
+    @NullSource
+    fun `Should return HTTP 401 for invalid service api key`(apiKey: String?) = runTest {
+
+        // pre-conditions
+        val expectedRequest = UserTestUtils.guestMethodLastUsageRequest
+        // test
+        webClient
+            .put()
+            .uri("/user/lastPaymentMethodUsed")
+            .header("x-api-key", apiKey)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(expectedRequest)
+            .exchange()
+            .expectStatus()
+            .isUnauthorized
     }
 }

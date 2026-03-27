@@ -9,6 +9,7 @@ import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodRequest
 import java.time.Duration
 import java.util.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -20,6 +21,7 @@ import reactor.core.publisher.Mono
 class LastUsageController(
     @Autowired private val userStatisticsService: UserStatisticsService,
     private val webClient: WebClient = WebClient.create(),
+    @Value("\${security.apiKey.primary}") private val primaryKey: String
 ) : UserApi {
 
     override fun getLastPaymentMethodUsed(
@@ -55,6 +57,7 @@ class LastUsageController(
         webClient
             .put()
             .uri(WarmupUtils.LAST_PAYMENT_METHOD_USED_PATH)
+            .header("x-api-key", primaryKey)
             .bodyValue(WarmupUtils.warmupLastMethodUsedBody)
             .retrieve()
             .toBodilessEntity()
@@ -63,6 +66,7 @@ class LastUsageController(
                 webClient
                     .get()
                     .uri(WarmupUtils.LAST_PAYMENT_METHOD_USED_PATH)
+                    .header("x-api-key", primaryKey)
                     .header(WarmupUtils.X_USER_ID_HEADER_KEY, WarmupUtils.zeroUUID.toString())
                     .retrieve()
                     .toBodilessEntity()
