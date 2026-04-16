@@ -9,6 +9,21 @@ permissions:
   pull-requests: read
 
 jobs:
+  semver_labels:
+    name: Read semver labels from merged PR
+    runs-on: ubuntu-latest
+    outputs:
+      semver_app: ${{ steps.semver_labels.outputs.semver_app }}
+      semver_chart: ${{ steps.semver_labels.outputs.semver_chart }}
+      skip_release: ${{ steps.semver_labels.outputs.skip_release }}
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        with:
+          token: ${{ secrets.github_token }}
+      - uses: ./.github/actions/check-pr-semver-labels
+        id: semver_labels
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
   azure-devops-deploy-pipeline:
     name: Trigger azure devops deploy pipeline
     runs-on: ubuntu-latest

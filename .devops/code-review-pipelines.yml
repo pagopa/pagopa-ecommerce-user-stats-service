@@ -81,7 +81,7 @@ stages:
           - checkout: pagopaEcommerceLocal
           - script: |
               echo "##[debug] Change placeholder for ecommerce-user-stats-service, set branch to: [$(BRANCH_NAME)]"
-              sed -i "s/^ECOMMERCE_USER_STATS_COMMIT_SHA=.*$/ECOMMERCE_USER_STATS_COMMIT_SHA=$(BRANCH_NAME)/" .env
+              sed -i "s|^ECOMMERCE_USER_STATS_COMMIT_SHA=.*$|ECOMMERCE_USER_STATS_COMMIT_SHA=$(BRANCH_NAME)|" .env
             displayName: 'Change service branch name into ecommerce-local .env file'
           - script: docker compose up mongo pagopa-ecommerce-user-stats-service -d
             displayName: 'Run app with docker-compose'
