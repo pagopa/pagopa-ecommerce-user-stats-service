@@ -84,6 +84,7 @@ microservice-chart:
           scaleUp:
             stabilizationWindowSeconds: 60
   envConfig:
+    ACTIVE_PROFILE: k8s
     ROOT_LOGGING_LEVEL: "INFO"
     APP_LOGGING_LEVEL: "INFO"
     WEB_LOGGING_LEVEL: "OFF"
