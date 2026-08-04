@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.users.documents.LastUsage
 import it.pagopa.ecommerce.users.documents.UserStatistics
 import it.pagopa.ecommerce.users.documents.WalletLastUsageMethodDetails
 import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
+import it.pagopa.ecommerce.users.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.users.repositories.UserStatisticsRepository
 import it.pagopa.generated.ecommerce.users.model.GuestMethodLastUsageData
 import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
@@ -26,7 +27,7 @@ class UserStatisticsService(
 
     /** Find user last method by id */
     fun findUserLastMethodById(userId: String): Mono<UserLastPaymentMethodData> {
-        logger.info("Finding last method used for userId: [{}]", userId)
+        logger.debug("Finding last method used for userId: [{}]", userId)
         return userStatisticsRepository
             .findById(userId)
             .switchIfEmpty(
@@ -38,7 +39,13 @@ class UserStatisticsService(
                 }
             )
             .map { mapUserStatisticsToUserLastPaymentMethodData(it.lastUsage) }
-            .doOnNext { logger.info("Last used data found for userId: [{}] -> {}", userId, it) }
+            .doOnNext {
+                LogTracingUtils.withContextDetailsMdc(
+                    mapOf("userId" to userId, "UserLastPaymentMethod" to it.type)
+                ) {
+                    logger.info("Last used data found for userId: [{}] -> {}", userId, it)
+                }
+            }
     }
 
     /** Save user last payment method data */
@@ -47,7 +54,7 @@ class UserStatisticsService(
     ): Mono<Unit> {
         val userId = userLastPaymentMethodRequest.userId
         val userLastPaymentMethodData = userLastPaymentMethodRequest.details
-        logger.info(
+        logger.debug(
             "Saving last used method for userId: [{}]. Last method used data: [{}]",
             userId,
             userLastPaymentMethodData

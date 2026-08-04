@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.users.exceptions.handlers
 
 import it.pagopa.ecommerce.users.exceptions.ApiError
+import it.pagopa.ecommerce.users.mdcutilities.LogTracingUtils
 import it.pagopa.generated.ecommerce.users.model.ProblemJson
 import jakarta.validation.ConstraintViolationException
 import jakarta.validation.ValidationException
@@ -32,7 +33,14 @@ class ExceptionHandler {
 
     @ExceptionHandler(ApiError::class)
     fun handleApiErrorException(exception: ApiError): ResponseEntity<ProblemJson> {
-        logger.error("Exception processing the request", exception)
+        LogTracingUtils.withErrorMdc(
+            exception,
+            mapOf(
+                LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to "Exception processing the request"
+            )
+        ) {
+            logger.error("Exception processing the request", exception)
+        }
         val errorDetails = exception.errorDetails()
         return ResponseEntity.status(errorDetails.httpStatusCode)
             .body(
@@ -54,7 +62,12 @@ class ExceptionHandler {
         ConstraintViolationException::class
     )
     fun handleRequestValidationException(exception: Exception): ResponseEntity<ProblemJson> {
-        logger.error(INVALID_REQUEST_ERROR_MESSAGE, exception)
+        LogTracingUtils.withErrorMdc(
+            exception,
+            mapOf(LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to INVALID_REQUEST_ERROR_MESSAGE)
+        ) {
+            logger.error(INVALID_REQUEST_ERROR_MESSAGE, exception)
+        }
         val validationErrorCause =
             when (exception) {
                 is ConstraintViolationException ->
@@ -93,7 +106,14 @@ class ExceptionHandler {
     /** Handler for generic exception */
     @ExceptionHandler(Throwable::class)
     fun handleGenericException(e: Throwable): ResponseEntity<ProblemJson> {
-        logger.error("Exception processing the request", e)
+        LogTracingUtils.withErrorMdc(
+            e,
+            mapOf(
+                LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to "Exception processing the request"
+            )
+        ) {
+            logger.error(INVALID_REQUEST_ERROR_MESSAGE, e)
+        }
         return ResponseEntity.internalServerError()
             .body(
                 ProblemJson()

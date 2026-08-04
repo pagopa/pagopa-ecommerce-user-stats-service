@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.users.warmup
 
+import it.pagopa.ecommerce.users.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.users.warmup.annotations.WarmupFunction
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.hasAnnotation
@@ -20,7 +21,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         val restControllers =
             event.applicationContext.getBeansWithAnnotation<RestController>().map { it.value }
-        logger.info("Found controllers: [{}]", restControllers.size)
+        logger.debug("Found controllers: [{}]", restControllers.size)
         restControllers.forEach(this::warmUpController)
     }
 
@@ -37,36 +38,75 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                 val result: Result<*>
                                 val intertime = measureTimeMillis {
                                     result = runCatching {
-                                        logger.info("Invoking function: [{}]", it.toString())
+                                        logger.debug("Invoking function: [{}]", it.toString())
                                         it.call(controllerToWarmUpInstance)
                                     }
                                 }
-                                logger.info(
-                                    "Warmup function: [{}] -> elapsed time: [{}]. Is ok: [{}] ",
-                                    it.toString(),
-                                    intertime,
-                                    result.isSuccess
-                                )
-                                if (result.isFailure) {
-                                    logger.error(
-                                        "Error performing warmup method: [$it]",
-                                        result.exceptionOrNull()
+                                LogTracingUtils.withContextDetailsMdc(
+                                    mapOf(
+                                        "warmingFunction" to it.toString(),
+                                        "elsapsedTime" to intertime
+                                    ),
+                                    mapOf(
+                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                            result.isSuccess
                                     )
+                                ) {
+                                    logger.info(
+                                        "Warmup function: [{}] -> elapsed time: [{}]. Is ok: [{}] ",
+                                        it.toString(),
+                                        intertime,
+                                        result.isSuccess
+                                    )
+                                }
+
+                                if (result.isFailure) {
+                                    LogTracingUtils.withErrorMdc(
+                                        result.exceptionOrNull(),
+                                        mapOf(
+                                            LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to
+                                                result.isFailure,
+                                            LogTracingUtils.TracingEntry.EVENT_ACTION.key to
+                                                it.toString()
+                                        )
+                                    ) {
+                                        logger.error(
+                                            "Error performing warmup method: [$it]",
+                                            result.exceptionOrNull()
+                                        )
+                                    }
                                 }
                                 1
                             }
                             .sum()
                     }
                     .getOrElse {
-                        logger.error("Exception performing controller warm up ", it)
+                        LogTracingUtils.withErrorMdc(
+                            it,
+                            mapOf(
+                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to 0,
+                                LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to
+                                    "Error performing warmup method"
+                            )
+                        ) {
+                            logger.error("Exception performing controller warm up ", it)
+                        }
                         0
                     }
         }
-        logger.info(
-            "Controller: [{}] warm-up executed functions: [{}], elapsed time: [{}] ms",
-            controllerToWarmUpKClass,
-            warmUpMethods,
-            elapsedTime
-        )
+        LogTracingUtils.withContextDetailsMdc(
+            mapOf(
+                "controller" to controllerToWarmUpKClass,
+                "warmUpMethods" to warmUpMethods,
+                "elsapsedTime" to elapsedTime
+            )
+        ) {
+            logger.info(
+                "Controller: [{}] warm-up executed functions: [{}], elapsed time: [{}] ms",
+                controllerToWarmUpKClass,
+                warmUpMethods,
+                elapsedTime
+            )
+        }
     }
 }

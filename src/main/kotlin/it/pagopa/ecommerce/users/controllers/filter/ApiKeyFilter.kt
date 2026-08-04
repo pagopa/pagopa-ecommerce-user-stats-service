@@ -1,5 +1,6 @@
 package it.pagopa.ecommerce.users.controllers.filter
 
+import it.pagopa.ecommerce.users.mdcutilities.LogTracingUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -47,10 +48,16 @@ class ApiKeyFilter(
                     false
                 }
             if (!isAuthorized) {
-                logger.error(
-                    "Unauthorized request for path: [{}], missing or invalid input [\"x-api-key\"] header",
-                    requestPath
-                )
+                LogTracingUtils.withContextDetailsMdc(
+                    null,
+                    mapOf(LogTracingUtils.TracingEntry.PATH.key to requestPath)
+                ) {
+                    logger.warn(
+                        "Unauthorized request for path: [{}], missing or invalid input [\"x-api-key\"] header",
+                        requestPath
+                    )
+                }
+
                 exchange.response.statusCode = HttpStatus.UNAUTHORIZED
                 return exchange.response.setComplete()
             }
@@ -66,7 +73,12 @@ class ApiKeyFilter(
             } else {
                 ApiKeyType.UNKNOWN
             }
-        logger.debug("Matched key: [{}] for path: [{}]", matchedKeyType, requestPath)
+        LogTracingUtils.withContextDetailsMdc(
+            mapOf("matchedKeyType" to matchedKeyType),
+            mapOf(LogTracingUtils.TracingEntry.PATH.key to requestPath)
+        ) {
+            logger.debug("Matched key: [{}] for path: [{}]", matchedKeyType, requestPath)
+        }
     }
 
     private fun getRequestApiKey(exchange: ServerWebExchange): String? {
