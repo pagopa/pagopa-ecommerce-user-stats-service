@@ -21,7 +21,13 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         val restControllers =
             event.applicationContext.getBeansWithAnnotation<RestController>().map { it.value }
-        logger.debug("Found controllers: [{}]", restControllers.size)
+        if (logger.isDebugEnabled) {
+            LogTracingUtils.withContextDetailsMdc(
+                mapOf("restControllers.size" to restControllers.size)
+            ) {
+                logger.debug("Found controllers: [{}]", restControllers.size)
+            }
+        }
         restControllers.forEach(this::warmUpController)
     }
 
@@ -38,7 +44,18 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                 val result: Result<*>
                                 val intertime = measureTimeMillis {
                                     result = runCatching {
-                                        logger.debug("Invoking function: [{}]", it.toString())
+                                        if (logger.isDebugEnabled) {
+                                            LogTracingUtils.withContextDetailsMdc(
+                                                mapOf(
+                                                    "warmingFunction" to it.toString(),
+                                                )
+                                            ) {
+                                                logger.debug(
+                                                    "Invoking function: [{}]",
+                                                    it.toString()
+                                                )
+                                            }
+                                        }
                                         it.call(controllerToWarmUpInstance)
                                     }
                                 }

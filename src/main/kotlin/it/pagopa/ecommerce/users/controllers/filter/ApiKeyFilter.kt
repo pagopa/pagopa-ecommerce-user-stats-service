@@ -73,11 +73,13 @@ class ApiKeyFilter(
             } else {
                 ApiKeyType.UNKNOWN
             }
-        LogTracingUtils.withContextDetailsMdc(
-            mapOf("matchedKeyType" to matchedKeyType),
-            mapOf(LogTracingUtils.TracingEntry.PATH.key to requestPath)
-        ) {
-            logger.debug("Matched key: [{}] for path: [{}]", matchedKeyType, requestPath)
+        if (logger.isDebugEnabled) {
+            LogTracingUtils.withContextDetailsMdc(
+                mapOf("matchedKeyType" to matchedKeyType),
+                mapOf(LogTracingUtils.TracingEntry.PATH.key to requestPath)
+            ) {
+                logger.debug("Matched key: [{}] for path: [{}]", matchedKeyType, requestPath)
+            }
         }
     }
 

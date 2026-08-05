@@ -27,7 +27,11 @@ class UserStatisticsService(
 
     /** Find user last method by id */
     fun findUserLastMethodById(userId: String): Mono<UserLastPaymentMethodData> {
-        logger.debug("Finding last method used for userId: [{}]", userId)
+        if (logger.isDebugEnabled) {
+            LogTracingUtils.withContextDetailsMdc(mapOf("userId" to userId)) {
+                logger.debug("Finding last method used for userId: [{}]", userId)
+            }
+        }
         return userStatisticsRepository
             .findById(userId)
             .switchIfEmpty(
@@ -54,11 +58,17 @@ class UserStatisticsService(
     ): Mono<Unit> {
         val userId = userLastPaymentMethodRequest.userId
         val userLastPaymentMethodData = userLastPaymentMethodRequest.details
-        logger.debug(
-            "Saving last used method for userId: [{}]. Last method used data: [{}]",
-            userId,
-            userLastPaymentMethodData
-        )
+        if (logger.isDebugEnabled) {
+            LogTracingUtils.withContextDetailsMdc(
+                mapOf("userId" to userId, "userLastPaymentMethodData" to userLastPaymentMethodData)
+            ) {
+                logger.debug(
+                    "Saving last used method for userId: [{}]. Last method used data: [{}]",
+                    userId,
+                    userLastPaymentMethodData
+                )
+            }
+        }
         return mono { userLastPaymentMethodData }
             .map {
                 it.let {
