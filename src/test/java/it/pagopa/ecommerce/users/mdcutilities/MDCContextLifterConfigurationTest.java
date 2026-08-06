@@ -27,7 +27,7 @@ class MDCContextLifterConfigurationTest {
 
         String afterHook = Mono.just("value")
                 .hide()
-                .contextWrite(Context.of(LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey(), "tx-001"))
+                .contextWrite(Context.of(LogTracingUtils.TracingEntry.EVENT_ACTION.getKey(), "tx-001"))
                 .block();
         assertEquals("value", afterHook);
 
@@ -35,7 +35,7 @@ class MDCContextLifterConfigurationTest {
 
         String afterCleanup = Mono.just("value")
                 .hide()
-                .contextWrite(Context.of(LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey(), "tx-001"))
+                .contextWrite(Context.of(LogTracingUtils.TracingEntry.EVENT_ACTION.getKey(), "tx-001"))
                 .block();
         assertEquals("value", afterCleanup);
     }

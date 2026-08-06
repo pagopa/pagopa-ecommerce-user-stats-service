@@ -47,8 +47,6 @@ class MDCContextLifterTest {
     void shouldCopyContextToMdcOnNext() {
         RecordingSubscriber coreSubscriber = new RecordingSubscriber(
                 Context.of(
-                        LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey(),
-                        "transaction-id",
                         LogTracingUtils.TracingEntry.EVENT_ACTION.getKey(),
                         "ACTION"
                 )
@@ -58,12 +56,7 @@ class MDCContextLifterTest {
         lifter.onNext("payload");
 
         assertEquals("payload", coreSubscriber.nextValue);
-        assertEquals("transaction-id", coreSubscriber.capturedTransactionId);
         assertEquals("ACTION", coreSubscriber.capturedEventAction);
-        assertEquals(
-                LogTracingUtils.TracingEntry.CTX_EVENT_CODE.getDefaultValue(),
-                coreSubscriber.capturedEventCode
-        );
         assertNull(coreSubscriber.capturedDependency);
     }
 
@@ -82,7 +75,7 @@ class MDCContextLifterTest {
     @Test
     void shouldAlwaysClearMdcOnError() {
         RecordingSubscriber coreSubscriber = new RecordingSubscriber(
-                Context.of(LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey(), "transaction-id")
+                Context.of(LogTracingUtils.TracingEntry.EVENT_ACTION.getKey(), "action_test")
         );
         RuntimeException expected = new RuntimeException("delegate-error");
         RuntimeException failure = new RuntimeException("upstream");
@@ -93,13 +86,13 @@ class MDCContextLifterTest {
 
         assertSame(expected, thrown);
         assertSame(failure, coreSubscriber.lastError);
-        assertNull(MDC.get(LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey()));
+        assertNull(MDC.get(LogTracingUtils.TracingEntry.EVENT_ACTION.getKey()));
     }
 
     @Test
     void shouldAlwaysClearMdcOnComplete() {
         RecordingSubscriber coreSubscriber = new RecordingSubscriber(
-                Context.of(LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey(), "transaction-id")
+                Context.of(LogTracingUtils.TracingEntry.EVENT_ACTION.getKey(), "action_test")
         );
         RuntimeException expected = new RuntimeException("delegate-complete-error");
         coreSubscriber.onCompleteToThrow = expected;
@@ -109,7 +102,7 @@ class MDCContextLifterTest {
 
         assertSame(expected, thrown);
         assertTrue(coreSubscriber.completed);
-        assertNull(MDC.get(LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey()));
+        assertNull(MDC.get(LogTracingUtils.TracingEntry.EVENT_ACTION.getKey()));
     }
 
     @Test
@@ -149,9 +142,7 @@ class MDCContextLifterTest {
         @Override
         public void onNext(String value) {
             this.nextValue = value;
-            this.capturedTransactionId = MDC.get(LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey());
             this.capturedEventAction = MDC.get(LogTracingUtils.TracingEntry.EVENT_ACTION.getKey());
-            this.capturedEventCode = MDC.get(LogTracingUtils.TracingEntry.CTX_EVENT_CODE.getKey());
             this.capturedDependency = MDC.get(LogTracingUtils.TracingEntry.DEPENDENCY.getKey());
         }
 

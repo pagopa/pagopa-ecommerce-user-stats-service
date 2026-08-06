@@ -41,8 +41,8 @@ class LogTracingUtilsTest {
         // prerequisite
         Context existingContext = Context.of("pre-existing-key", "pre-existing-value");
         Map<LogTracingUtils.TracingEntry, String> tracingEntries = Map.of(
-                LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID,
-                "transaction-id"
+                LogTracingUtils.TracingEntry.EVENT_ACTION,
+                "event_action"
         );
 
         // test
@@ -50,15 +50,15 @@ class LogTracingUtilsTest {
 
         // assertions
         assertEquals("pre-existing-value", enrichedContext.get("pre-existing-key"));
-        assertEquals("transaction-id", enrichedContext.get(LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey()));
+        assertEquals("event_action", enrichedContext.get(LogTracingUtils.TracingEntry.EVENT_ACTION.getKey()));
     }
 
     @Test
     void shouldEnrichContextUsingProvidedAndDefaultValues() {
         // prerequisite
         Map<LogTracingUtils.TracingEntry, String> tracingEntries = new EnumMap<>(LogTracingUtils.TracingEntry.class);
-        tracingEntries.put(LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID, "transaction-id");
-        tracingEntries.put(LogTracingUtils.TracingEntry.CTX_EVENT_CODE, null);
+        tracingEntries.put(LogTracingUtils.TracingEntry.EVENT_ACTION, "event_action");
+        tracingEntries.put(LogTracingUtils.TracingEntry.EVENT_OUTCOME, null);
 
         // test
         Context enrichedContext = LogTracingUtils.enrichContextForEvent(
@@ -67,15 +67,12 @@ class LogTracingUtilsTest {
         );
 
         // assertions
-        assertEquals("transaction-id", enrichedContext.get("ctx.transaction.id"));
-        assertEquals("{eventCode-not-found}", enrichedContext.get("ctx.event.code"));
+        assertEquals("event_action", enrichedContext.get("event.action"));
+        assertEquals("{eventOutcome-not-found}", enrichedContext.get("event.outcome"));
     }
 
     @Test
     void shouldExposeExpectedTracingEntryKeys() {
-        assertEquals("ctx.transaction.id", LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getKey());
-        assertEquals("ctx.event.code", LogTracingUtils.TracingEntry.CTX_EVENT_CODE.getKey());
-        assertEquals("ctx.event.id", LogTracingUtils.TracingEntry.CTX_EVENT_ID.getKey());
         assertEquals("event.action", LogTracingUtils.TracingEntry.EVENT_ACTION.getKey());
         assertEquals("event.outcome", LogTracingUtils.TracingEntry.EVENT_OUTCOME.getKey());
         assertEquals("dependency", LogTracingUtils.TracingEntry.DEPENDENCY.getKey());
@@ -85,9 +82,6 @@ class LogTracingUtilsTest {
 
     @Test
     void shouldExposeExpectedTracingEntryDefaultValues() {
-        assertEquals("{transactionId-not-found}", LogTracingUtils.TracingEntry.CTX_TRANSACTION_ID.getDefaultValue());
-        assertEquals("{eventCode-not-found}", LogTracingUtils.TracingEntry.CTX_EVENT_CODE.getDefaultValue());
-        assertEquals("{eventId-not-found}", LogTracingUtils.TracingEntry.CTX_EVENT_ID.getDefaultValue());
         assertEquals("{eventAction-not-found}", LogTracingUtils.TracingEntry.EVENT_ACTION.getDefaultValue());
         assertEquals("{errorType-not-found}", LogTracingUtils.TracingEntry.ERROR_TYPE.getDefaultValue());
         assertEquals("{errorMessage-not-found}", LogTracingUtils.TracingEntry.ERROR_MESSAGE.getDefaultValue());

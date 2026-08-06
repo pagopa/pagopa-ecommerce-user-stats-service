@@ -30,28 +30,6 @@ public class LogTracingUtils {
 
     /** Tracing keys copied from Reactor Context to MDC. */
     public enum TracingEntry {
-        /** Reactor context key for transaction identifier. */
-        CTX_TRANSACTION_ID("ctx.transaction.id", "{transactionId-not-found}", true),
-        /** Reactor context key for event code. */
-        CTX_EVENT_CODE("ctx.event.code", "{eventCode-not-found}", true),
-        /** Reactor context key for event identifier. */
-        CTX_EVENT_ID("ctx.event.id", "{eventId-not-found}", true),
-        /** Reactor context key for RPT identifiers. */
-        CTX_RPT_IDS("ctx.rpt.ids", "{rptIds-not-found}", false),
-        /** Reactor context key for payment tokens. */
-        CTX_PAYMENT_TOKENS("ctx.payment.tokens", "{paymentTokens-not-found}", false),
-        /** Reactor context key for user identifier. */
-        CTX_USER_ID("ctx.user.id", "{userId-not-found}", true),
-        /** Reactor context key for X-Forwarded-For value. */
-        CTX_FORWARDED_FOR("ctx.forwarded.for", "{forwardedFor-not-found}", true),
-        /** MDC key for correlation identifier. */
-        CORRELATION_ID("correlation.id", "{correlationId-not-found}", false),
-        /** MDC key for operation identifier. */
-        OPERATION_ID("operation.id", "{operationId-not-found}", false),
-        /** MDC key for response code. */
-        RESPONSE_CODE("response.code", "{responseCode-not-found}", false),
-        /** MDC key for response payload. */
-        RESPONSE_BODY("response.body", "{responseBody-not-found}", false),
         /** MDC key for request path. */
         PATH("path", "{path-not-found}", false),
         /** Reactor context key for action associated with the event. */
