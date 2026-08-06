@@ -49,12 +49,10 @@ class ApiKeyFilter(
                 }
             if (!isAuthorized) {
                 LogTracingUtils.withContextDetailsMdc(
-                    null,
                     mapOf(LogTracingUtils.TracingEntry.PATH.key to requestPath)
                 ) {
                     logger.warn(
-                        "Unauthorized request for path: [{}], missing or invalid input [\"x-api-key\"] header",
-                        requestPath
+                        "Unauthorized request, missing or invalid input [\"x-api-key\"] header"
                     )
                 }
 
@@ -75,10 +73,12 @@ class ApiKeyFilter(
             }
         if (logger.isDebugEnabled) {
             LogTracingUtils.withContextDetailsMdc(
-                mapOf("matchedKeyType" to matchedKeyType),
-                mapOf(LogTracingUtils.TracingEntry.PATH.key to requestPath)
+                mapOf(
+                    "matchedKeyType" to matchedKeyType,
+                    LogTracingUtils.TracingEntry.PATH.key to requestPath
+                )
             ) {
-                logger.debug("Matched key: [{}] for path: [{}]", matchedKeyType, requestPath)
+                logger.debug("Matched key.", matchedKeyType, requestPath)
             }
         }
     }

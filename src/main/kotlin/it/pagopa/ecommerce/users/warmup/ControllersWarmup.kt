@@ -23,7 +23,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
             event.applicationContext.getBeansWithAnnotation<RestController>().map { it.value }
         if (logger.isDebugEnabled) {
             LogTracingUtils.withContextDetailsMdc(
-                mapOf("restControllers.size" to restControllers.size)
+                mapOf("rest_controllers_size" to restControllers.size)
             ) {
                 logger.debug("Found controllers")
             }
@@ -47,7 +47,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                         if (logger.isDebugEnabled) {
                                             LogTracingUtils.withContextDetailsMdc(
                                                 mapOf(
-                                                    "warmingFunction" to it.toString(),
+                                                    "warming_function" to it.toString(),
                                                 )
                                             ) {
                                                 logger.debug("Invoking function")
@@ -58,8 +58,8 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                 }
                                 LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
-                                        "warmingFunction" to it.toString(),
-                                        "elsapsedTime" to intertime
+                                        "warming_function" to it.toString(),
+                                        "elapsed_time" to intertime
                                     ),
                                     mapOf(
                                         LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to
@@ -87,14 +87,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                             .sum()
                     }
                     .getOrElse {
-                        LogTracingUtils.withErrorMdc(
-                            it,
-                            mapOf(
-                                LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to 0,
-                                LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to
-                                    "Error performing warmup method"
-                            )
-                        ) {
+                        LogTracingUtils.withErrorMdc(it) {
                             logger.error("Exception performing controller warm up ")
                         }
                         0
@@ -103,8 +96,8 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
         LogTracingUtils.withContextDetailsMdc(
             mapOf(
                 "controller" to controllerToWarmUpKClass,
-                "warmUpMethods" to warmUpMethods,
-                "elsapsedTime" to elapsedTime
+                "warmup_methods" to warmUpMethods,
+                "elapsed_time" to elapsedTime
             )
         ) {
             logger.info("Controller: warm-up executed functions")

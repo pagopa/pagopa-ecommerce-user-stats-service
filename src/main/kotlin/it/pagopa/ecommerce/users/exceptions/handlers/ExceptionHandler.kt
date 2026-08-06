@@ -33,14 +33,7 @@ class ExceptionHandler {
 
     @ExceptionHandler(ApiError::class)
     fun handleApiErrorException(exception: ApiError): ResponseEntity<ProblemJson> {
-        LogTracingUtils.withErrorMdc(
-            exception,
-            mapOf(
-                LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to "Exception processing the request"
-            )
-        ) {
-            logger.error("Exception processing the request", exception)
-        }
+        LogTracingUtils.withErrorMdc(exception) { logger.error("Exception processing the request") }
         val errorDetails = exception.errorDetails()
         return ResponseEntity.status(errorDetails.httpStatusCode)
             .body(
@@ -106,14 +99,7 @@ class ExceptionHandler {
     /** Handler for generic exception */
     @ExceptionHandler(Throwable::class)
     fun handleGenericException(e: Throwable): ResponseEntity<ProblemJson> {
-        LogTracingUtils.withErrorMdc(
-            e,
-            mapOf(
-                LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to "Exception processing the request"
-            )
-        ) {
-            logger.error(INVALID_REQUEST_ERROR_MESSAGE, e)
-        }
+        LogTracingUtils.withErrorMdc(e) { logger.error(INVALID_REQUEST_ERROR_MESSAGE, e) }
         return ResponseEntity.internalServerError()
             .body(
                 ProblemJson()

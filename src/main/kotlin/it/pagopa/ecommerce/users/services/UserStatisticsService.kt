@@ -28,7 +28,7 @@ class UserStatisticsService(
     /** Find user last method by id */
     fun findUserLastMethodById(userId: String): Mono<UserLastPaymentMethodData> {
         if (logger.isDebugEnabled) {
-            LogTracingUtils.withContextDetailsMdc(mapOf("userId" to userId)) {
+            LogTracingUtils.withContextDetailsMdc(mapOf("user_id" to userId)) {
                 logger.debug("Finding last method used for target userId")
             }
         }
@@ -45,7 +45,7 @@ class UserStatisticsService(
             .map { mapUserStatisticsToUserLastPaymentMethodData(it.lastUsage) }
             .doOnNext {
                 LogTracingUtils.withContextDetailsMdc(
-                    mapOf("userId" to userId, "UserLastPaymentMethod" to it.type)
+                    mapOf("user_id" to userId, "payment_method" to it.type)
                 ) {
                     logger.info("Last used data found")
                 }
