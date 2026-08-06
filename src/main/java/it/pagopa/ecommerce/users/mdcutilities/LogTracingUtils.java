@@ -44,10 +44,6 @@ public class LogTracingUtils {
         CTX_USER_ID("ctx.user.id", "{userId-not-found}", true),
         /** Reactor context key for X-Forwarded-For value. */
         CTX_FORWARDED_FOR("ctx.forwarded.for", "{forwardedFor-not-found}", true),
-        /** MDC key for business transaction identifier. */
-        TRANSACTION_ID("transaction.id", "{transactionId-not-found}", false),
-        /** MDC key for business transaction status. */
-        TRANSACTION_STATUS("transaction.status", "{transactionStatus-not-found}", false),
         /** MDC key for correlation identifier. */
         CORRELATION_ID("correlation.id", "{correlationId-not-found}", false),
         /** MDC key for operation identifier. */
@@ -56,14 +52,6 @@ public class LogTracingUtils {
         RESPONSE_CODE("response.code", "{responseCode-not-found}", false),
         /** MDC key for response payload. */
         RESPONSE_BODY("response.body", "{responseBody-not-found}", false),
-        /** MDC key for PSP identifier. */
-        PSP_ID("psp.id", "{pspId-not-found}", false),
-        /** MDC key for PSP channel code. */
-        PSP_CHANNEL_CODE("psp.channel.code", "{pspChannelCode-not-found}", false),
-        /** MDC key for PSP transaction identifier. */
-        PSP_TRANSACTION_ID("psp.transaction.id", "{pspTransactionId-not-found}", false),
-        /** MDC key for queue event identifier. */
-        QUEUE_EVENT_ID("queue.event.id", "{queueEventId-not-found}", false),
         /** MDC key for request path. */
         PATH("path", "{path-not-found}", false),
         /** Reactor context key for action associated with the event. */

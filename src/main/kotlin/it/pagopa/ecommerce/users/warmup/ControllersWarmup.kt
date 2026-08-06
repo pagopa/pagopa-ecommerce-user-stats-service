@@ -25,7 +25,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
             LogTracingUtils.withContextDetailsMdc(
                 mapOf("restControllers.size" to restControllers.size)
             ) {
-                logger.debug("Found controllers: [{}]", restControllers.size)
+                logger.debug("Found controllers")
             }
         }
         restControllers.forEach(this::warmUpController)
@@ -50,10 +50,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                                     "warmingFunction" to it.toString(),
                                                 )
                                             ) {
-                                                logger.debug(
-                                                    "Invoking function: [{}]",
-                                                    it.toString()
-                                                )
+                                                logger.debug("Invoking function")
                                             }
                                         }
                                         it.call(controllerToWarmUpInstance)
@@ -69,12 +66,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                             result.isSuccess
                                     )
                                 ) {
-                                    logger.info(
-                                        "Warmup function: [{}] -> elapsed time: [{}]. Is ok: [{}] ",
-                                        it.toString(),
-                                        intertime,
-                                        result.isSuccess
-                                    )
+                                    logger.info("Warmup function")
                                 }
 
                                 if (result.isFailure) {
@@ -87,10 +79,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                                 it.toString()
                                         )
                                     ) {
-                                        logger.error(
-                                            "Error performing warmup method: [$it]",
-                                            result.exceptionOrNull()
-                                        )
+                                        logger.error("Error performing warmup method")
                                     }
                                 }
                                 1
@@ -106,7 +95,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                     "Error performing warmup method"
                             )
                         ) {
-                            logger.error("Exception performing controller warm up ", it)
+                            logger.error("Exception performing controller warm up ")
                         }
                         0
                     }
@@ -118,12 +107,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                 "elsapsedTime" to elapsedTime
             )
         ) {
-            logger.info(
-                "Controller: [{}] warm-up executed functions: [{}], elapsed time: [{}] ms",
-                controllerToWarmUpKClass,
-                warmUpMethods,
-                elapsedTime
-            )
+            logger.info("Controller: warm-up executed functions")
         }
     }
 }

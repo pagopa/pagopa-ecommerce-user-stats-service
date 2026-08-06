@@ -29,7 +29,7 @@ class UserStatisticsService(
     fun findUserLastMethodById(userId: String): Mono<UserLastPaymentMethodData> {
         if (logger.isDebugEnabled) {
             LogTracingUtils.withContextDetailsMdc(mapOf("userId" to userId)) {
-                logger.debug("Finding last method used for userId: [{}]", userId)
+                logger.debug("Finding last method used for target userId")
             }
         }
         return userStatisticsRepository
@@ -47,7 +47,7 @@ class UserStatisticsService(
                 LogTracingUtils.withContextDetailsMdc(
                     mapOf("userId" to userId, "UserLastPaymentMethod" to it.type)
                 ) {
-                    logger.info("Last used data found for userId: [{}] -> {}", userId, it)
+                    logger.info("Last used data found")
                 }
             }
     }
@@ -62,11 +62,7 @@ class UserStatisticsService(
             LogTracingUtils.withContextDetailsMdc(
                 mapOf("userId" to userId, "userLastPaymentMethodData" to userLastPaymentMethodData)
             ) {
-                logger.debug(
-                    "Saving last used method for userId: [{}]. Last method used data: [{}]",
-                    userId,
-                    userLastPaymentMethodData
-                )
+                logger.debug("Saving last used method for target userId")
             }
         }
         return mono { userLastPaymentMethodData }
