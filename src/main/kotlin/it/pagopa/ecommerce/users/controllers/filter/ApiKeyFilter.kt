@@ -78,7 +78,7 @@ class ApiKeyFilter(
                     LogTracingUtils.TracingEntry.PATH.key to requestPath
                 )
             ) {
-                logger.debug("Matched key.", matchedKeyType, requestPath)
+                logger.debug("Matched key")
             }
         }
     }

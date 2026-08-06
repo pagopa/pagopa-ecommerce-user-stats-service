@@ -47,10 +47,10 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                         if (logger.isDebugEnabled) {
                                             LogTracingUtils.withContextDetailsMdc(
                                                 mapOf(
-                                                    "warming_function" to it.toString(),
+                                                    "warmup_function" to it.toString(),
                                                 )
                                             ) {
-                                                logger.debug("Invoking function")
+                                                logger.debug("Perform warmup function")
                                             }
                                         }
                                         it.call(controllerToWarmUpInstance)
@@ -58,7 +58,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                 }
                                 LogTracingUtils.withContextDetailsMdc(
                                     mapOf(
-                                        "warming_function" to it.toString(),
+                                        "warmup_function" to it.toString(),
                                         "elapsed_time" to intertime
                                     ),
                                     mapOf(
@@ -88,7 +88,7 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                     }
                     .getOrElse {
                         LogTracingUtils.withErrorMdc(it) {
-                            logger.error("Exception performing controller warm up ")
+                            logger.error("Exception performing controller warm up")
                         }
                         0
                     }

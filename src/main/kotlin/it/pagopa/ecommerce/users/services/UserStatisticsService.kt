@@ -60,7 +60,7 @@ class UserStatisticsService(
         val userLastPaymentMethodData = userLastPaymentMethodRequest.details
         if (logger.isDebugEnabled) {
             LogTracingUtils.withContextDetailsMdc(
-                mapOf("userId" to userId, "userLastPaymentMethodData" to userLastPaymentMethodData)
+                mapOf("user_id" to userId, "payment_method" to userLastPaymentMethodData)
             ) {
                 logger.debug("Saving last used method for target userId")
             }
