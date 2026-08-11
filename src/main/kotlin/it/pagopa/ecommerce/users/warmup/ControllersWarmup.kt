@@ -22,11 +22,10 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
         val restControllers =
             event.applicationContext.getBeansWithAnnotation<RestController>().map { it.value }
         if (logger.isDebugEnabled) {
-            LogTracingUtils.withContextDetailsMdc(
-                mapOf("rest_controllers_size" to restControllers.size)
-            ) {
-                logger.debug("Found controllers")
-            }
+            LogTracingUtils.loggerTracingUtils()
+                .success()
+                .details(mapOf("rest_controllers_size" to restControllers.size.toString()))
+                .logDebug(logger, "Found controllers")
         }
         restControllers.forEach(this::warmUpController)
     }
@@ -45,62 +44,57 @@ class ControllersWarmup : ApplicationListener<ContextRefreshedEvent> {
                                 val intertime = measureTimeMillis {
                                     result = runCatching {
                                         if (logger.isDebugEnabled) {
-                                            LogTracingUtils.withContextDetailsMdc(
-                                                mapOf(
-                                                    "warmup_function" to it.toString(),
+                                            LogTracingUtils.loggerTracingUtils()
+                                                .success()
+                                                .details(
+                                                    mapOf(
+                                                        "warmup_function" to it.toString(),
+                                                    )
                                                 )
-                                            ) {
-                                                logger.debug("Perform warmup function")
-                                            }
+                                                .logDebug(logger, "Perform warmup function")
                                         }
                                         it.call(controllerToWarmUpInstance)
                                     }
                                 }
-                                LogTracingUtils.withContextDetailsMdc(
-                                    mapOf(
-                                        "warmup_function" to it.toString(),
-                                        "elapsed_time" to intertime
-                                    ),
-                                    mapOf(
-                                        LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                            result.isSuccess
+                                LogTracingUtils.loggerTracingUtils()
+                                    .success()
+                                    .details(
+                                        mapOf(
+                                            "warmup_function" to it.toString(),
+                                            "elapsed_time" to intertime.toString()
+                                        )
                                     )
-                                ) {
-                                    logger.info("Warmup function")
-                                }
+                                    .logInfo(logger, "Warmup function")
 
                                 if (result.isFailure) {
-                                    LogTracingUtils.withErrorMdc(
-                                        result.exceptionOrNull(),
-                                        mapOf(
-                                            LogTracingUtils.TracingEntry.EVENT_OUTCOME.key to
-                                                result.isFailure,
-                                            LogTracingUtils.TracingEntry.EVENT_ACTION.key to
-                                                it.toString()
+                                    LogTracingUtils.loggerTracingUtils()
+                                        .failure()
+                                        .logError(
+                                            logger,
+                                            result.exceptionOrNull(),
+                                            "Error performing warmup method"
                                         )
-                                    ) {
-                                        logger.error("Error performing warmup method")
-                                    }
                                 }
                                 1
                             }
                             .sum()
                     }
                     .getOrElse {
-                        LogTracingUtils.withErrorMdc(it) {
-                            logger.error("Exception performing controller warm up")
-                        }
+                        LogTracingUtils.loggerTracingUtils()
+                            .failure()
+                            .logError(logger, it, "Exception performing controller warm up")
                         0
                     }
         }
-        LogTracingUtils.withContextDetailsMdc(
-            mapOf(
-                "controller" to controllerToWarmUpKClass,
-                "warmup_methods" to warmUpMethods,
-                "elapsed_time" to elapsedTime
+        LogTracingUtils.loggerTracingUtils()
+            .success()
+            .details(
+                mapOf(
+                    "controller" to controllerToWarmUpKClass.toString(),
+                    "warmup_methods" to warmUpMethods.toString(),
+                    "elapsed_time" to elapsedTime.toString()
+                )
             )
-        ) {
-            logger.info("Controller: warm-up executed functions")
-        }
+            .logInfo(logger, "Controller: warm-up executed functions")
     }
 }

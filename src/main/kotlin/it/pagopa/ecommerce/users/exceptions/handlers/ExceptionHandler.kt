@@ -33,7 +33,9 @@ class ExceptionHandler {
 
     @ExceptionHandler(ApiError::class)
     fun handleApiErrorException(exception: ApiError): ResponseEntity<ProblemJson> {
-        LogTracingUtils.withErrorMdc(exception) { logger.error("Exception processing the request") }
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logError(logger, exception, "Exception processing the request")
         val errorDetails = exception.errorDetails()
         return ResponseEntity.status(errorDetails.httpStatusCode)
             .body(
@@ -55,12 +57,9 @@ class ExceptionHandler {
         ConstraintViolationException::class
     )
     fun handleRequestValidationException(exception: Exception): ResponseEntity<ProblemJson> {
-        LogTracingUtils.withErrorMdc(
-            exception,
-            mapOf(LogTracingUtils.TracingEntry.ERROR_MESSAGE.key to INVALID_REQUEST_ERROR_MESSAGE)
-        ) {
-            logger.error(INVALID_REQUEST_ERROR_MESSAGE, exception)
-        }
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logError(logger, exception, INVALID_REQUEST_ERROR_MESSAGE)
         val validationErrorCause =
             when (exception) {
                 is ConstraintViolationException ->
@@ -99,7 +98,9 @@ class ExceptionHandler {
     /** Handler for generic exception */
     @ExceptionHandler(Throwable::class)
     fun handleGenericException(e: Throwable): ResponseEntity<ProblemJson> {
-        LogTracingUtils.withErrorMdc(e) { logger.error(INVALID_REQUEST_ERROR_MESSAGE, e) }
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logErrorWithStackTrace(logger, e, INVALID_REQUEST_ERROR_MESSAGE)
         return ResponseEntity.internalServerError()
             .body(
                 ProblemJson()

@@ -28,9 +28,10 @@ class UserStatisticsService(
     /** Find user last method by id */
     fun findUserLastMethodById(userId: String): Mono<UserLastPaymentMethodData> {
         if (logger.isDebugEnabled) {
-            LogTracingUtils.withContextDetailsMdc(mapOf("user_id" to userId)) {
-                logger.debug("Finding last method used for target userId")
-            }
+            LogTracingUtils.loggerTracingUtils()
+                .success()
+                .details(mapOf("user_id" to userId))
+                .logDebug(logger, "Finding last method used for target userId")
         }
         return userStatisticsRepository
             .findById(userId)
@@ -44,11 +45,10 @@ class UserStatisticsService(
             )
             .map { mapUserStatisticsToUserLastPaymentMethodData(it.lastUsage) }
             .doOnNext {
-                LogTracingUtils.withContextDetailsMdc(
-                    mapOf("user_id" to userId, "payment_method" to it.type)
-                ) {
-                    logger.info("Last used data found")
-                }
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(mapOf("user_id" to userId, "payment_method" to it.type))
+                    .logInfo(logger, "Last used data found")
             }
     }
 
@@ -59,11 +59,15 @@ class UserStatisticsService(
         val userId = userLastPaymentMethodRequest.userId
         val userLastPaymentMethodData = userLastPaymentMethodRequest.details
         if (logger.isDebugEnabled) {
-            LogTracingUtils.withContextDetailsMdc(
-                mapOf("user_id" to userId, "payment_method" to userLastPaymentMethodData)
-            ) {
-                logger.debug("Saving last used method for target userId")
-            }
+            LogTracingUtils.loggerTracingUtils()
+                .success()
+                .details(
+                    mapOf(
+                        "user_id" to userId.toString(),
+                        "payment_method" to userLastPaymentMethodData.toString()
+                    )
+                )
+                .logDebug(logger, "Saving last used method for target userId")
         }
         return mono { userLastPaymentMethodData }
             .map {

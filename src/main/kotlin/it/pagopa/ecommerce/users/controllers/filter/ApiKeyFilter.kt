@@ -48,13 +48,13 @@ class ApiKeyFilter(
                     false
                 }
             if (!isAuthorized) {
-                LogTracingUtils.withContextDetailsMdc(
-                    mapOf(LogTracingUtils.TracingEntry.PATH.key to requestPath)
-                ) {
-                    logger.warn(
-                        "Unauthorized request, missing or invalid input [\"x-api-key\"] header"
+                LogTracingUtils.loggerTracingUtils()
+                    .failure()
+                    .details(mapOf("path" to requestPath))
+                    .logWarn(
+                        logger,
+                        "Unauthorized request for path, missing or invalid input [\"x-api-key\"] header"
                     )
-                }
 
                 exchange.response.statusCode = HttpStatus.UNAUTHORIZED
                 return exchange.response.setComplete()
@@ -72,14 +72,10 @@ class ApiKeyFilter(
                 ApiKeyType.UNKNOWN
             }
         if (logger.isDebugEnabled) {
-            LogTracingUtils.withContextDetailsMdc(
-                mapOf(
-                    "matchedKeyType" to matchedKeyType,
-                    LogTracingUtils.TracingEntry.PATH.key to requestPath
-                )
-            ) {
-                logger.debug("Matched key")
-            }
+            LogTracingUtils.loggerTracingUtils()
+                .success()
+                .details(mapOf("path" to requestPath, "api_key_type" to matchedKeyType.name))
+                .logDebug(logger, "Matched API key type for path")
         }
     }
 
