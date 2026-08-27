@@ -47,6 +47,7 @@ class UserStatisticsService(
             .doOnNext {
                 LogTracingUtils.loggerTracingUtils()
                     .success()
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
                     .details(mapOf("user_id" to userId, "payment_method" to it.type))
                     .logInfo(logger, "Last used data found")
             }
@@ -58,17 +59,6 @@ class UserStatisticsService(
     ): Mono<Unit> {
         val userId = userLastPaymentMethodRequest.userId
         val userLastPaymentMethodData = userLastPaymentMethodRequest.details
-        if (logger.isDebugEnabled) {
-            LogTracingUtils.loggerTracingUtils()
-                .success()
-                .details(
-                    mapOf(
-                        "user_id" to userId.toString(),
-                        "payment_method" to userLastPaymentMethodData.toString()
-                    )
-                )
-                .logDebug(logger, "Saving last used method for target userId")
-        }
         return mono { userLastPaymentMethodData }
             .map {
                 it.let {
@@ -99,6 +89,29 @@ class UserStatisticsService(
                 }
             }
             .flatMap { userStatisticsRepository.save(it) }
+            .doOnSuccess {
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "user_id" to userId.toString(),
+                            "payment_method" to userLastPaymentMethodData.toString()
+                        )
+                    )
+                    .logInfo(logger, "Saving last used method for target userId")
+            }
+            .doOnError { error ->
+                LogTracingUtils.loggerTracingUtils()
+                    .failure()
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .details(
+                        mapOf(
+                            "user_id" to userId.toString(),
+                            "payment_method" to userLastPaymentMethodData.toString()
+                        )
+                    )
+                    .logError(logger, error, "Error during save of userStatistics")
+            }
             .thenReturn(Unit)
     }
 
