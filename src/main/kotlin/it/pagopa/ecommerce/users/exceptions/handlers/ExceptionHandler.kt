@@ -1,6 +1,7 @@
 package it.pagopa.ecommerce.users.exceptions.handlers
 
 import it.pagopa.ecommerce.users.exceptions.ApiError
+import it.pagopa.ecommerce.users.mdcutilities.LogTracingUtils
 import it.pagopa.generated.ecommerce.users.model.ProblemJson
 import jakarta.validation.ConstraintViolationException
 import jakarta.validation.ValidationException
@@ -32,7 +33,9 @@ class ExceptionHandler {
 
     @ExceptionHandler(ApiError::class)
     fun handleApiErrorException(exception: ApiError): ResponseEntity<ProblemJson> {
-        logger.error("Exception processing the request", exception)
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logError(logger, exception, "Exception processing the request")
         val errorDetails = exception.errorDetails()
         return ResponseEntity.status(errorDetails.httpStatusCode)
             .body(
@@ -54,7 +57,9 @@ class ExceptionHandler {
         ConstraintViolationException::class
     )
     fun handleRequestValidationException(exception: Exception): ResponseEntity<ProblemJson> {
-        logger.error(INVALID_REQUEST_ERROR_MESSAGE, exception)
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logError(logger, exception, INVALID_REQUEST_ERROR_MESSAGE)
         val validationErrorCause =
             when (exception) {
                 is ConstraintViolationException ->
@@ -93,7 +98,9 @@ class ExceptionHandler {
     /** Handler for generic exception */
     @ExceptionHandler(Throwable::class)
     fun handleGenericException(e: Throwable): ResponseEntity<ProblemJson> {
-        logger.error("Exception processing the request", e)
+        LogTracingUtils.loggerTracingUtils()
+            .failure()
+            .logErrorWithStackTrace(logger, e, INVALID_REQUEST_ERROR_MESSAGE)
         return ResponseEntity.internalServerError()
             .body(
                 ProblemJson()

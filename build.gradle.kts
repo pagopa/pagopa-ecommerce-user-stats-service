@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "it.pagopa.ecommerce.users"
 
-version = "1.3.1"
+version = "1.4.0"
 
 description = "pagopa-ecommerce-user-stats-service"
 
@@ -76,6 +76,8 @@ dependencies {
 
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:${Dependencies.ecsLoggingVersion}")
+
+  implementation("io.micrometer:context-propagation")
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   // test dependencies
