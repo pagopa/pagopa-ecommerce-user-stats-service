@@ -77,6 +77,8 @@ dependencies {
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:${Dependencies.ecsLoggingVersion}")
 
+  implementation("io.micrometer:context-propagation")
+
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   // test dependencies
   testImplementation("org.springframework.boot:spring-boot-starter-test")

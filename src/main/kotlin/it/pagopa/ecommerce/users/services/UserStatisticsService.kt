@@ -5,6 +5,7 @@ import it.pagopa.ecommerce.users.documents.LastUsage
 import it.pagopa.ecommerce.users.documents.UserStatistics
 import it.pagopa.ecommerce.users.documents.WalletLastUsageMethodDetails
 import it.pagopa.ecommerce.users.exceptions.UserNotFoundException
+import it.pagopa.ecommerce.users.mdcutilities.LogTracingUtils
 import it.pagopa.ecommerce.users.repositories.UserStatisticsRepository
 import it.pagopa.generated.ecommerce.users.model.GuestMethodLastUsageData
 import it.pagopa.generated.ecommerce.users.model.UserLastPaymentMethodData
@@ -26,7 +27,12 @@ class UserStatisticsService(
 
     /** Find user last method by id */
     fun findUserLastMethodById(userId: String): Mono<UserLastPaymentMethodData> {
-        logger.info("Finding last method used for userId: [{}]", userId)
+        if (logger.isDebugEnabled) {
+            LogTracingUtils.loggerTracingUtils()
+                .success()
+                .details(mapOf("user_id" to userId))
+                .logDebug(logger, "Finding last method used for target userId")
+        }
         return userStatisticsRepository
             .findById(userId)
             .switchIfEmpty(
@@ -38,7 +44,13 @@ class UserStatisticsService(
                 }
             )
             .map { mapUserStatisticsToUserLastPaymentMethodData(it.lastUsage) }
-            .doOnNext { logger.info("Last used data found for userId: [{}] -> {}", userId, it) }
+            .doOnNext {
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .details(mapOf("user_id" to userId, "payment_method" to it.type))
+                    .logInfo(logger, "Last used data found")
+            }
     }
 
     /** Save user last payment method data */
@@ -47,11 +59,6 @@ class UserStatisticsService(
     ): Mono<Unit> {
         val userId = userLastPaymentMethodRequest.userId
         val userLastPaymentMethodData = userLastPaymentMethodRequest.details
-        logger.info(
-            "Saving last used method for userId: [{}]. Last method used data: [{}]",
-            userId,
-            userLastPaymentMethodData
-        )
         return mono { userLastPaymentMethodData }
             .map {
                 it.let {
@@ -82,6 +89,29 @@ class UserStatisticsService(
                 }
             }
             .flatMap { userStatisticsRepository.save(it) }
+            .doOnSuccess {
+                LogTracingUtils.loggerTracingUtils()
+                    .success()
+                    .details(
+                        mapOf(
+                            "user_id" to userId.toString(),
+                            "payment_method" to userLastPaymentMethodData.toString()
+                        )
+                    )
+                    .logInfo(logger, "Saving last used method for target userId")
+            }
+            .doOnError { error ->
+                LogTracingUtils.loggerTracingUtils()
+                    .failure()
+                    .dependency(LogTracingUtils.MONGO_DEPENDENCY)
+                    .details(
+                        mapOf(
+                            "user_id" to userId.toString(),
+                            "payment_method" to userLastPaymentMethodData.toString()
+                        )
+                    )
+                    .logError(logger, error, "Error during save of userStatistics")
+            }
             .thenReturn(Unit)
     }
 

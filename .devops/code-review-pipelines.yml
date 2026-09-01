@@ -48,6 +48,7 @@ stages:
             inputs:
               gradleWrapperFile: 'gradlew' # string. Alias: wrapperScript. Required. Gradle wrapper. Default: gradlew.
               tasks: 'build' # string. Required. Tasks. Default: build.
+              options: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=768m" --no-daemon'
               publishJUnitResults: true
               testResultsFiles: '**/TEST-*.xml' # string. Required when publishJUnitResults = true. Test results files. Default: **/TEST-*.xml.
               codeCoverageToolOption: 'None' # 'None' | 'Cobertura' | 'JaCoCo'. Alias: codeCoverageTool. Code coverage tool. Default: None.
