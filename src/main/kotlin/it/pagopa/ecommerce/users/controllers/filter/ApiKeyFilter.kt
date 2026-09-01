@@ -64,7 +64,7 @@ class ApiKeyFilter(
         return chain.filter(exchange)
     }
 
-    private fun logMatchedApiKeyType(requestApiKey: String?, requestPath: String) {
+    private fun logMatchedApiKeyType(requestApiKey: String?, requestPath: String?) {
         val matchedKeyType: ApiKeyType =
             if (requestApiKey != null) {
                 validKeys[requestApiKey] ?: ApiKeyType.UNKNOWN
@@ -74,7 +74,12 @@ class ApiKeyFilter(
         if (logger.isDebugEnabled) {
             LogTracingUtils.loggerTracingUtils()
                 .success()
-                .details(mapOf("path" to requestPath, "api_key_type" to matchedKeyType.name))
+                .details(
+                    mapOf(
+                        "path" to (requestPath ?: "unknown"),
+                        "api_key_type" to matchedKeyType.name
+                    )
+                )
                 .logDebug(logger, "Matched API key type for path")
         }
     }
