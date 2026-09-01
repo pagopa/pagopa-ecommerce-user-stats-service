@@ -64,7 +64,7 @@ class ApiKeyFilter(
         return chain.filter(exchange)
     }
 
-    private fun logMatchedApiKeyType(requestApiKey: String?, requestPath: String?) {
+    private fun logMatchedApiKeyType(requestApiKey: String?, requestPath: String) {
         val matchedKeyType: ApiKeyType =
             if (requestApiKey != null) {
                 validKeys[requestApiKey] ?: ApiKeyType.UNKNOWN
