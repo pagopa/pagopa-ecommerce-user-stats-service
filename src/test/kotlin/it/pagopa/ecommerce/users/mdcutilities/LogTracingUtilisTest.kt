@@ -37,9 +37,9 @@ class LogTracingUtilsTest {
         // Act
         // We use doAnswer to inspect MDC exactly when logger.info() is called
         doAnswer {
-                assertEquals("test-action", MDC.get("event.action"))
-                assertEquals("12345", MDC.get("correlation.id"))
-                assertEquals("success", MDC.get("event.outcome"))
+                assertEquals("test-action", MDC.get("event_action"))
+                assertEquals("12345", MDC.get("correlation_id"))
+                assertEquals("success", MDC.get("event_outcome"))
                 null
             }
             .`when`(mockLogger)
@@ -53,9 +53,9 @@ class LogTracingUtilsTest {
         // Assert
         verify(mockLogger, times(1)).info("Test info message")
         // Verify Cleanup
-        assertNull(MDC.get("event.action"), "MDC should be cleaned up after logging")
-        assertNull(MDC.get("correlation.id"))
-        assertNull(MDC.get("event.outcome"))
+        assertNull(MDC.get("event_action"), "MDC should be cleaned up after logging")
+        assertNull(MDC.get("correlation_id"))
+        assertNull(MDC.get("event_outcome"))
     }
 
     @Test
@@ -64,7 +64,7 @@ class LogTracingUtilsTest {
         val testException = RuntimeException("Something went wrong")
 
         doAnswer {
-                assertEquals("failure", MDC.get("event.outcome"))
+                assertEquals("failure", MDC.get("event_outcome"))
                 assertEquals(RuntimeException::class.java.name, MDC.get("error.type"))
                 assertEquals("Something went wrong", MDC.get("error.message"))
                 assertNotNull(MDC.get("error.stack_trace"))
@@ -94,7 +94,7 @@ class LogTracingUtilsTest {
                 // Note: because LogTracingUtils puts dependencies into the details map,
                 // we should parse the JSON to verify both the details and the dependency are
                 // present
-                val mdcDetails = MDC.get("ctx.details")
+                val mdcDetails = MDC.get("ctx_details")
                 assertNotNull(mdcDetails)
                 assertTrue(mdcDetails.contains("\"userId\":\"u-123\""))
                 assertTrue(mdcDetails.contains("\"retryCount\":\"3\""))
@@ -112,7 +112,7 @@ class LogTracingUtilsTest {
 
         // Assert
         verify(mockLogger, times(1)).debug("Test debug message")
-        assertNull(MDC.get("ctx.details"))
+        assertNull(MDC.get("ctx_details"))
     }
 
     @Test
@@ -174,7 +174,7 @@ class LogTracingUtilsTest {
         attributes[AttributeKeys.CTX_USER_ID] = null // Null value
 
         doAnswer {
-                assertNull(MDC.get("ctx.user.id"))
+                assertNull(MDC.get("ctx_user_id"))
                 null
             }
             .`when`(mockLogger)
@@ -230,7 +230,7 @@ class LogTracingUtilsTest {
         val enrichedContext = LogTracingUtils.enrichContextForEvent(tracingEntries, Context.empty())
 
         // assertions
-        assertEquals("event_action", enrichedContext.get("event.action"))
-        assertEquals("{correlationId-not-found}", enrichedContext.get("correlation.id"))
+        assertEquals("event_action", enrichedContext.get("event_action"))
+        assertEquals("{correlationId-not-found}", enrichedContext.get("correlation_id"))
     }
 }
