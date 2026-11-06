@@ -100,7 +100,7 @@ microservice-chart:
     MONGO_WAITING_QUEUE_MS: "2000"
     MONGO_HEARTBEAT_FREQUENCY_MS: "5000"
     OTEL_RESOURCE_ATTRIBUTES: "service.name=pagopa-ecommerce-user-stats-service,deployment.environment=dev"
-    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-scalable-lb-collector.otel.svc.cluster.local:4317"
     OTEL_EXPORTER_OTLP_PROTOCOL: grpc
     OTEL_TRACES_EXPORTER: otlp
     OTEL_METRICS_EXPORTER: otlp
