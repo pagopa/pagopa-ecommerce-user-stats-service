@@ -84,6 +84,7 @@ microservice-chart:
           scaleUp:
             stabilizationWindowSeconds: 60
   envConfig:
+    JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
     ACTIVE_PROFILE: k8s
     ROOT_LOGGING_LEVEL: "INFO"
     APP_LOGGING_LEVEL: "INFO"
