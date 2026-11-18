@@ -14,7 +14,7 @@ microservice-chart:
     image:
       repository: pagopaucommonacr.azurecr.io/pagopaecommerceuserstatsservice
       tag: "latest"
-    envConfig: {}
+    envConfig: {JAVA_OPTS: "-XX:-UseBASE64Intrinsics"}
     envSecret: {}
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaecommerceuserstatsservice
@@ -84,6 +84,7 @@ microservice-chart:
           scaleUp:
             stabilizationWindowSeconds: 60
   envConfig:
+    JAVA_OPTS: "-XX:-UseBASE64Intrinsics"
     ACTIVE_PROFILE: k8s
     ROOT_LOGGING_LEVEL: "INFO"
     APP_LOGGING_LEVEL: "INFO"
